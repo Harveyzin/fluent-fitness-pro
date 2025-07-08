@@ -6,6 +6,7 @@ import NutritionScreen from '@/components/Nutrition/NutritionScreen';
 import WorkoutsScreen from '@/components/Workouts/WorkoutsScreen';
 import ProgressScreen from '@/components/Progress/ProgressScreen';
 import ProfileScreen from '@/components/Profile/ProfileScreen';
+import { NutritionProvider } from '@/contexts/NutritionContext';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState('home');
@@ -28,9 +29,11 @@ const Index = () => {
   };
 
   return (
-    <MainLayout activeTab={activeTab} onTabChange={setActiveTab}>
-      {renderContent()}
-    </MainLayout>
+    <NutritionProvider>
+      <MainLayout activeTab={activeTab} onTabChange={setActiveTab}>
+        {renderContent()}
+      </MainLayout>
+    </NutritionProvider>
   );
 };
 

@@ -1,10 +1,15 @@
+
 import React from 'react';
 import { Calendar, Target, Zap, TrendingUp, Plus, Bell, Dumbbell, Apple } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { useNutrition } from '@/contexts/NutritionContext';
 
 const Dashboard = () => {
+  const { getDailyTotals, nutritionData } = useNutrition();
+  const dailyTotals = getDailyTotals();
+  
   const today = new Date().toLocaleDateString('pt-BR', { 
     weekday: 'long', 
     day: 'numeric',
@@ -12,10 +17,34 @@ const Dashboard = () => {
   });
 
   const stats = [
-    { label: 'Calorias', value: '1,847', target: '2,200', progress: 84, color: 'bg-fitflow-green' },
-    { label: 'Proteínas', value: '89g', target: '120g', progress: 74, color: 'bg-blue-500' },
-    { label: 'Carboidratos', value: '156g', target: '200g', progress: 78, color: 'bg-orange-500' },
-    { label: 'Gorduras', value: '67g', target: '80g', progress: 84, color: 'bg-purple-500' },
+    { 
+      label: 'Calorias', 
+      value: dailyTotals.calories.toString(), 
+      target: nutritionData.dailyGoals.calories.toString(), 
+      progress: Math.min((dailyTotals.calories / nutritionData.dailyGoals.calories) * 100, 100), 
+      color: 'bg-fitflow-green' 
+    },
+    { 
+      label: 'Proteínas', 
+      value: `${dailyTotals.protein}g`, 
+      target: `${nutritionData.dailyGoals.protein}g`, 
+      progress: Math.min((dailyTotals.protein / nutritionData.dailyGoals.protein) * 100, 100), 
+      color: 'bg-blue-500' 
+    },
+    { 
+      label: 'Carboidratos', 
+      value: `${dailyTotals.carbs}g`, 
+      target: `${nutritionData.dailyGoals.carbs}g`, 
+      progress: Math.min((dailyTotals.carbs / nutritionData.dailyGoals.carbs) * 100, 100), 
+      color: 'bg-orange-500' 
+    },
+    { 
+      label: 'Gorduras', 
+      value: `${dailyTotals.fat}g`, 
+      target: `${nutritionData.dailyGoals.fat}g`, 
+      progress: Math.min((dailyTotals.fat / nutritionData.dailyGoals.fat) * 100, 100), 
+      color: 'bg-purple-500' 
+    },
   ];
 
   const quickActions = [
@@ -24,6 +53,10 @@ const Dashboard = () => {
     { icon: Target, label: 'Definir Meta', color: 'bg-orange-500' },
     { icon: TrendingUp, label: 'Ver Progresso', color: 'bg-purple-500' },
   ];
+
+  const overallProgress = Math.round(
+    (dailyTotals.calories / nutritionData.dailyGoals.calories) * 100
+  );
 
   return (
     <div className="container mx-auto px-4 py-6 space-y-6">
@@ -49,7 +82,7 @@ const Dashboard = () => {
             Progresso do Dia
           </h3>
           <div className="text-right">
-            <div className="text-2xl font-bold text-fitflow-green">84%</div>
+            <div className="text-2xl font-bold text-fitflow-green">{overallProgress}%</div>
             <p className="text-sm text-muted-foreground">do objetivo</p>
           </div>
         </div>
@@ -97,44 +130,34 @@ const Dashboard = () => {
           Atividade Recente
         </h3>
         <div className="space-y-4">
-          <div className="flex items-center justify-between py-2 border-b border-border/50">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-fitflow-green/10 rounded-lg flex items-center justify-center">
-                <Apple size={16} className="text-fitflow-green" />
+          {nutritionData.items.slice(-3).reverse().map((item, index) => (
+            <div key={index} className="flex items-center justify-between py-2 border-b border-border/50">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-fitflow-green/10 rounded-lg flex items-center justify-center">
+                  <Apple size={16} className="text-fitflow-green" />
+                </div>
+                <div>
+                  <p className="font-medium text-sm">{item.food.name} adicionado</p>
+                  <p className="text-xs text-muted-foreground">
+                    {item.mealType === 'breakfast' ? 'Café da manhã' :
+                     item.mealType === 'lunch' ? 'Almoço' :
+                     item.mealType === 'snack' ? 'Lanche' : 'Jantar'}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="font-medium text-sm">Almoço adicionado</p>
-                <p className="text-xs text-muted-foreground">há 2 horas</p>
-              </div>
+              <span className="text-sm font-medium text-fitflow-green">
+                +{Math.round((item.food.calories_per_100g * item.quantity) / 100)} cal
+              </span>
             </div>
-            <span className="text-sm font-medium text-fitflow-green">+520 cal</span>
-          </div>
+          ))}
           
-          <div className="flex items-center justify-between py-2 border-b border-border/50">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-blue-500/10 rounded-lg flex items-center justify-center">
-                <Dumbbell size={16} className="text-blue-500" />
-              </div>
-              <div>
-                <p className="font-medium text-sm">Treino de Peito</p>
-                <p className="text-xs text-muted-foreground">há 3 horas</p>
-              </div>
+          {nutritionData.items.length === 0 && (
+            <div className="text-center py-8 text-muted-foreground">
+              <Apple size={32} className="mx-auto mb-2 opacity-30" />
+              <p>Nenhuma atividade recente</p>
+              <p className="text-xs">Adicione seus primeiros alimentos!</p>
             </div>
-            <span className="text-sm font-medium text-blue-500">45 min</span>
-          </div>
-          
-          <div className="flex items-center justify-between py-2">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-orange-500/10 rounded-lg flex items-center justify-center">
-                <Target size={16} className="text-orange-500" />
-              </div>
-              <div>
-                <p className="font-medium text-sm">Meta de água atingida</p>
-                <p className="text-xs text-muted-foreground">há 4 horas</p>
-              </div>
-            </div>
-            <span className="text-sm font-medium text-orange-500">2.5L</span>
-          </div>
+          )}
         </div>
       </Card>
     </div>

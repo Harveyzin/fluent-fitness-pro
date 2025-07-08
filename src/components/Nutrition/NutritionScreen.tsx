@@ -1,51 +1,85 @@
 
 import React, { useState } from 'react';
-import { Search, Plus, Camera, BarChart3, Clock } from 'lucide-react';
+import { Search, Plus, Camera, BarChart3, Clock, Trash2 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
+import { useNutrition } from '@/contexts/NutritionContext';
+import AddFoodModal from './AddFoodModal';
 
 const NutritionScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedMealType, setSelectedMealType] = useState<'breakfast' | 'lunch' | 'snack' | 'dinner'>('breakfast');
+  
+  const { nutritionData, getDailyTotals, getTotalsByMeal, removeMealItem, searchFoods } = useNutrition();
+  const dailyTotals = getDailyTotals();
 
   const meals = [
     {
+      id: 'breakfast',
       name: 'Café da Manhã',
       time: '08:00',
-      calories: 320,
-      items: ['Aveia com banana', 'Café com leite'],
       color: 'bg-orange-500'
     },
     {
+      id: 'lunch',
       name: 'Almoço',
       time: '12:30',
-      calories: 520,
-      items: ['Frango grelhado', 'Arroz integral', 'Salada'],
       color: 'bg-fitflow-green'
     },
     {
+      id: 'snack',
       name: 'Lanche',
       time: '15:00',
-      calories: 0,
-      items: [],
       color: 'bg-blue-500'
     },
     {
+      id: 'dinner',
       name: 'Jantar',
       time: '19:00',
-      calories: 0,
-      items: [],
       color: 'bg-purple-500'
     }
   ];
 
   const macros = [
-    { name: 'Calorias', current: 840, target: 2200, unit: 'kcal', color: 'bg-fitflow-green' },
-    { name: 'Proteínas', current: 45, target: 120, unit: 'g', color: 'bg-blue-500' },
-    { name: 'Carboidratos', current: 89, target: 200, unit: 'g', color: 'bg-orange-500' },
-    { name: 'Gorduras', current: 23, target: 80, unit: 'g', color: 'bg-purple-500' }
+    { 
+      name: 'Calorias', 
+      current: dailyTotals.calories, 
+      target: nutritionData.dailyGoals.calories, 
+      unit: 'kcal', 
+      color: 'bg-fitflow-green' 
+    },
+    { 
+      name: 'Proteínas', 
+      current: dailyTotals.protein, 
+      target: nutritionData.dailyGoals.protein, 
+      unit: 'g', 
+      color: 'bg-blue-500' 
+    },
+    { 
+      name: 'Carboidratos', 
+      current: dailyTotals.carbs, 
+      target: nutritionData.dailyGoals.carbs, 
+      unit: 'g', 
+      color: 'bg-orange-500' 
+    },
+    { 
+      name: 'Gorduras', 
+      current: dailyTotals.fat, 
+      target: nutritionData.dailyGoals.fat, 
+      unit: 'g', 
+      color: 'bg-purple-500' 
+    }
   ];
+
+  const handleAddFood = (mealType: 'breakfast' | 'lunch' | 'snack' | 'dinner') => {
+    setSelectedMealType(mealType);
+    setModalOpen(true);
+  };
+
+  const searchResults = searchQuery ? searchFoods(searchQuery) : [];
 
   return (
     <div className="container mx-auto px-4 py-6 space-y-6">
@@ -59,7 +93,7 @@ const NutritionScreen = () => {
       <Card className="p-6 shadow-card animate-scale-in">
         <div className="grid grid-cols-2 gap-4">
           {macros.map((macro, index) => {
-            const percentage = (macro.current / macro.target) * 100;
+            const percentage = macro.target > 0 ? (macro.current / macro.target) * 100 : 0;
             return (
               <div key={index} className="space-y-2">
                 <div className="flex justify-between items-center">
@@ -68,7 +102,7 @@ const NutritionScreen = () => {
                     {macro.current}{macro.unit} / {macro.target}{macro.unit}
                   </span>
                 </div>
-                <Progress value={percentage} className="h-2" />
+                <Progress value={Math.min(percentage, 100)} className="h-2" />
                 <div className="text-right">
                   <span className="text-xs font-semibold text-fitflow-green">
                     {Math.round(percentage)}%
@@ -92,6 +126,19 @@ const NutritionScreen = () => {
           />
         </div>
         
+        {searchResults.length > 0 && (
+          <Card className="mt-2 p-2 max-h-40 overflow-y-auto">
+            {searchResults.map((food) => (
+              <div key={food.id} className="p-2 hover:bg-gray-50 rounded cursor-pointer">
+                <div className="flex justify-between">
+                  <span className="font-medium">{food.name}</span>
+                  <span className="text-sm text-muted-foreground">{food.calories_per_100g} kcal/100g</span>
+                </div>
+              </div>
+            ))}
+          </Card>
+        )}
+        
         <div className="flex gap-2 mt-4">
           <Button variant="outline" className="flex-1" size="sm">
             <Camera size={16} className="mr-2" />
@@ -108,45 +155,68 @@ const NutritionScreen = () => {
       <div className="space-y-4 animate-slide-up">
         <h3 className="text-lg font-semibold">Refeições do Dia</h3>
         
-        {meals.map((meal, index) => (
-          <Card key={index} className="shadow-card hover:shadow-card-hover transition-smooth">
-            <div className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-3">
-                  <div className={`w-3 h-3 rounded-full ${meal.color}`}></div>
-                  <div>
-                    <h4 className="font-semibold">{meal.name}</h4>
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                      <Clock size={12} />
-                      {meal.time}
+        {meals.map((meal) => {
+          const mealTotals = getTotalsByMeal(meal.id);
+          const mealItems = nutritionData.items.filter(item => item.mealType === meal.id);
+          
+          return (
+            <Card key={meal.id} className="shadow-card hover:shadow-card-hover transition-smooth">
+              <div className="p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-3 h-3 rounded-full ${meal.color}`}></div>
+                    <div>
+                      <h4 className="font-semibold">{meal.name}</h4>
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                        <Clock size={12} />
+                        {meal.time}
+                      </div>
                     </div>
                   </div>
+                  <div className="text-right">
+                    <div className="font-semibold text-fitflow-green">{mealTotals.calories} kcal</div>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-6 px-2 text-xs"
+                      onClick={() => handleAddFood(meal.id as any)}
+                    >
+                      <Plus size={12} className="mr-1" />
+                      Adicionar
+                    </Button>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <div className="font-semibold text-fitflow-green">{meal.calories} kcal</div>
-                  <Button variant="ghost" size="sm" className="h-6 px-2 text-xs">
-                    <Plus size={12} className="mr-1" />
-                    Adicionar
-                  </Button>
-                </div>
+                
+                {mealItems.length > 0 ? (
+                  <div className="space-y-2">
+                    {mealItems.map((item, itemIndex) => (
+                      <div key={itemIndex} className="flex items-center justify-between bg-gray-50 rounded p-2">
+                        <div className="flex-1">
+                          <span className="text-sm font-medium">{item.food.name}</span>
+                          <div className="text-xs text-muted-foreground">
+                            {item.quantity}g • {Math.round((item.food.calories_per_100g * item.quantity) / 100)} kcal
+                          </div>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeMealItem(item.food.id)}
+                          className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
+                        >
+                          <Trash2 size={14} />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-sm text-muted-foreground italic">
+                    Nenhum alimento adicionado
+                  </div>
+                )}
               </div>
-              
-              {meal.items.length > 0 ? (
-                <div className="space-y-1">
-                  {meal.items.map((item, itemIndex) => (
-                    <div key={itemIndex} className="text-sm text-muted-foreground flex items-center justify-between">
-                      <span>• {item}</span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-sm text-muted-foreground italic">
-                  Nenhum alimento adicionado
-                </div>
-              )}
-            </div>
-          </Card>
-        ))}
+            </Card>
+          );
+        })}
       </div>
 
       {/* Quick Add Foods */}
@@ -161,6 +231,12 @@ const NutritionScreen = () => {
           ))}
         </div>
       </Card>
+
+      <AddFoodModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        mealType={selectedMealType}
+      />
     </div>
   );
 };
