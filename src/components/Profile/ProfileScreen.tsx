@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { User, Settings, Bell, Shield, HelpCircle, LogOut, Crown, Zap } from 'lucide-react';
 import { Card } from '@/components/ui/card';
@@ -150,7 +149,6 @@ const ProfileScreen = () => {
                     <Switch
                       checked={notifications}
                       onCheckedChange={setNotifications}
-                      size="sm"
                     />
                   )}
                 </div>
