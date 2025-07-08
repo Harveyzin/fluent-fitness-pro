@@ -1,13 +1,36 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import React, { useState } from 'react';
+import MainLayout from '@/components/Layout/MainLayout';
+import Dashboard from '@/components/Dashboard/Dashboard';
+import NutritionScreen from '@/components/Nutrition/NutritionScreen';
+import WorkoutsScreen from '@/components/Workouts/WorkoutsScreen';
+import ProgressScreen from '@/components/Progress/ProgressScreen';
+import ProfileScreen from '@/components/Profile/ProfileScreen';
 
 const Index = () => {
+  const [activeTab, setActiveTab] = useState('home');
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'home':
+        return <Dashboard />;
+      case 'nutrition':
+        return <NutritionScreen />;
+      case 'workouts':
+        return <WorkoutsScreen />;
+      case 'progress':
+        return <ProgressScreen />;
+      case 'profile':
+        return <ProfileScreen />;
+      default:
+        return <Dashboard />;
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <MainLayout activeTab={activeTab} onTabChange={setActiveTab}>
+      {renderContent()}
+    </MainLayout>
   );
 };
 
