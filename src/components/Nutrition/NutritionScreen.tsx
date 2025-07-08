@@ -7,13 +7,17 @@ import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { useNutrition } from '@/contexts/NutritionContext';
 import AddFoodModal from './AddFoodModal';
+import ScannerModal from './ScannerModal';
+import ReportModal from './ReportModal';
 
 const NutritionScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
+  const [scannerOpen, setScannerOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<'breakfast' | 'lunch' | 'snack' | 'dinner'>('breakfast');
   
-  const { nutritionData, getDailyTotals, getTotalsByMeal, removeMealItem, searchFoods } = useNutrition();
+  const { nutritionData, getDailyTotals, getTotalsByMeal, removeMealItem, searchFoods, addMealItem } = useNutrition();
   const dailyTotals = getDailyTotals();
 
   const meals = [
@@ -79,6 +83,17 @@ const NutritionScreen = () => {
     setModalOpen(true);
   };
 
+  const handleQuickAdd = (foodName: string) => {
+    const foods = searchFoods(foodName);
+    if (foods.length > 0) {
+      addMealItem({
+        food: foods[0],
+        quantity: 100,
+        mealType: 'snack'
+      });
+    }
+  };
+
   const searchResults = searchQuery ? searchFoods(searchQuery) : [];
 
   return (
@@ -129,7 +144,14 @@ const NutritionScreen = () => {
         {searchResults.length > 0 && (
           <Card className="mt-2 p-2 max-h-40 overflow-y-auto">
             {searchResults.map((food) => (
-              <div key={food.id} className="p-2 hover:bg-gray-50 rounded cursor-pointer">
+              <div 
+                key={food.id} 
+                className="p-2 hover:bg-gray-50 rounded cursor-pointer"
+                onClick={() => {
+                  setSelectedMealType('snack');
+                  setModalOpen(true);
+                }}
+              >
                 <div className="flex justify-between">
                   <span className="font-medium">{food.name}</span>
                   <span className="text-sm text-muted-foreground">{food.calories_per_100g} kcal/100g</span>
@@ -140,11 +162,21 @@ const NutritionScreen = () => {
         )}
         
         <div className="flex gap-2 mt-4">
-          <Button variant="outline" className="flex-1" size="sm">
+          <Button 
+            variant="outline" 
+            className="flex-1" 
+            size="sm"
+            onClick={() => setScannerOpen(true)}
+          >
             <Camera size={16} className="mr-2" />
             Scanner
           </Button>
-          <Button variant="outline" className="flex-1" size="sm">
+          <Button 
+            variant="outline" 
+            className="flex-1" 
+            size="sm"
+            onClick={() => setReportOpen(true)}
+          >
             <BarChart3 size={16} className="mr-2" />
             Relatório
           </Button>
@@ -224,7 +256,13 @@ const NutritionScreen = () => {
         <h4 className="font-semibold mb-3">Alimentos Frequentes</h4>
         <div className="grid grid-cols-2 gap-2">
           {['Banana', 'Peito de Frango', 'Arroz Integral', 'Ovos'].map((food, index) => (
-            <Button key={index} variant="outline" size="sm" className="justify-start">
+            <Button 
+              key={index} 
+              variant="outline" 
+              size="sm" 
+              className="justify-start"
+              onClick={() => handleQuickAdd(food)}
+            >
               <Plus size={14} className="mr-2" />
               {food}
             </Button>
@@ -236,6 +274,16 @@ const NutritionScreen = () => {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         mealType={selectedMealType}
+      />
+
+      <ScannerModal
+        isOpen={scannerOpen}
+        onClose={() => setScannerOpen(false)}
+      />
+
+      <ReportModal
+        isOpen={reportOpen}
+        onClose={() => setReportOpen(false)}
       />
     </div>
   );

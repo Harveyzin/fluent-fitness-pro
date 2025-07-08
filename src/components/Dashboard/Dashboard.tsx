@@ -6,7 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { useNutrition } from '@/contexts/NutritionContext';
 
-const Dashboard = () => {
+interface DashboardProps {
+  onTabChange: (tab: string) => void;
+}
+
+const Dashboard: React.FC<DashboardProps> = ({ onTabChange }) => {
   const { getDailyTotals, nutritionData } = useNutrition();
   const dailyTotals = getDailyTotals();
   
@@ -48,10 +52,30 @@ const Dashboard = () => {
   ];
 
   const quickActions = [
-    { icon: Plus, label: 'Adicionar Refeição', color: 'bg-fitflow-green' },
-    { icon: Dumbbell, label: 'Novo Treino', color: 'bg-blue-500' },
-    { icon: Target, label: 'Definir Meta', color: 'bg-orange-500' },
-    { icon: TrendingUp, label: 'Ver Progresso', color: 'bg-purple-500' },
+    { 
+      icon: Plus, 
+      label: 'Adicionar Refeição', 
+      color: 'bg-fitflow-green',
+      action: () => onTabChange('nutrition')
+    },
+    { 
+      icon: Dumbbell, 
+      label: 'Novo Treino', 
+      color: 'bg-blue-500',
+      action: () => onTabChange('workouts')
+    },
+    { 
+      icon: Target, 
+      label: 'Definir Meta', 
+      color: 'bg-orange-500',
+      action: () => onTabChange('profile')
+    },
+    { 
+      icon: TrendingUp, 
+      label: 'Ver Progresso', 
+      color: 'bg-purple-500',
+      action: () => onTabChange('progress')
+    },
   ];
 
   const overallProgress = Math.round(
@@ -110,7 +134,11 @@ const Dashboard = () => {
           {quickActions.map((action, index) => {
             const Icon = action.icon;
             return (
-              <Card key={index} className="p-4 hover:shadow-card-hover transition-smooth cursor-pointer group">
+              <Card 
+                key={index} 
+                className="p-4 hover:shadow-card-hover transition-smooth cursor-pointer group"
+                onClick={action.action}
+              >
                 <div className="flex items-center space-x-3">
                   <div className={`w-10 h-10 rounded-lg ${action.color} flex items-center justify-center group-hover:scale-110 transition-smooth`}>
                     <Icon size={20} className="text-white" />
