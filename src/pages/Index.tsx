@@ -7,6 +7,7 @@ import WorkoutsScreen from '@/components/Workouts/WorkoutsScreen';
 import ProgressScreen from '@/components/Progress/ProgressScreen';
 import ProfileScreen from '@/components/Profile/ProfileScreen';
 import { NutritionProvider } from '@/contexts/NutritionContext';
+import { WorkoutProvider } from '@/contexts/WorkoutContext';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState('home');
@@ -30,9 +31,11 @@ const Index = () => {
 
   return (
     <NutritionProvider>
-      <MainLayout activeTab={activeTab} onTabChange={setActiveTab}>
-        {renderContent()}
-      </MainLayout>
+      <WorkoutProvider>
+        <MainLayout activeTab={activeTab} onTabChange={setActiveTab}>
+          {renderContent()}
+        </MainLayout>
+      </WorkoutProvider>
     </NutritionProvider>
   );
 };

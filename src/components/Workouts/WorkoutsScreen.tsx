@@ -1,35 +1,37 @@
 
 import React, { useState } from 'react';
-import { Play, Plus, Clock, Target, Zap, Calendar } from 'lucide-react';
+import { Play, Plus, Clock, Target, Zap, Calendar, Edit, Trash2, Star } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useWorkout } from '@/contexts/WorkoutContext';
+import ActiveWorkoutModal from './ActiveWorkoutModal';
+import WorkoutCreatorModal from './WorkoutCreatorModal';
+import ExerciseLibraryModal from './ExerciseLibraryModal';
 
 const WorkoutsScreen = () => {
+  const { workoutTemplates, startWorkout, workoutHistory, deleteWorkoutTemplate } = useWorkout();
   const [activeTab, setActiveTab] = useState('today');
+  const [showActiveWorkout, setShowActiveWorkout] = useState(false);
+  const [showWorkoutCreator, setShowWorkoutCreator] = useState(false);
+  const [showExerciseLibrary, setShowExerciseLibrary] = useState(false);
 
-  const todayWorkout = {
-    name: 'Treino de Peito e Tríceps',
-    duration: '45-60 min',
-    exercises: 6,
-    level: 'Intermediário',
-    completed: false
+  const todayTemplate = workoutTemplates[0]; // Use first template as today's workout
+
+  const handleStartWorkout = (template = todayTemplate) => {
+    startWorkout(template);
+    setShowActiveWorkout(true);
   };
 
-  const exercises = [
-    { name: 'Supino Reto', sets: '4x8-10', rest: '90s', completed: false },
-    { name: 'Supino Inclinado', sets: '3x10-12', rest: '90s', completed: false },
-    { name: 'Crucifixo', sets: '3x12-15', rest: '60s', completed: false },
-    { name: 'Mergulho', sets: '3x10-12', rest: '60s', completed: false },
-    { name: 'Tríceps Testa', sets: '4x10-12', rest: '60s', completed: false },
-    { name: 'Tríceps Corda', sets: '3x12-15', rest: '45s', completed: false }
-  ];
-
-  const workoutHistory = [
-    { name: 'Treino de Costas', date: 'Ontem', duration: '52 min', exercises: 7 },
-    { name: 'Treino de Pernas', date: '2 dias atrás', duration: '68 min', exercises: 8 },
-    { name: 'Treino de Ombros', date: '3 dias atrás', duration: '45 min', exercises: 6 }
-  ];
+  const formatDate = (date: Date) => {
+    const today = new Date();
+    const diffTime = today.getTime() - date.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) return 'Hoje';
+    if (diffDays === 1) return 'Ontem';
+    return `${diffDays} dias atrás`;
+  };
 
   const tabs = [
     { id: 'today', label: 'Hoje', icon: Calendar },
@@ -67,27 +69,30 @@ const WorkoutsScreen = () => {
       </div>
 
       {/* Today's Workout */}
-      {activeTab === 'today' && (
+      {activeTab === 'today' && todayTemplate && (
         <div className="space-y-4 animate-slide-up">
           <Card className="p-6 shadow-card">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-xl font-bold">{todayWorkout.name}</h3>
+                <h3 className="text-xl font-bold">{todayTemplate.name}</h3>
                 <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
                   <div className="flex items-center gap-1">
                     <Clock size={14} />
-                    {todayWorkout.duration}
+                    {todayTemplate.duration}
                   </div>
                   <div className="flex items-center gap-1">
                     <Target size={14} />
-                    {todayWorkout.exercises} exercícios
+                    {todayTemplate.exercises.length} exercícios
                   </div>
                 </div>
               </div>
-              <Badge variant="secondary">{todayWorkout.level}</Badge>
+              <Badge variant="secondary">{todayTemplate.difficulty}</Badge>
             </div>
             
-            <Button className="w-full bg-fitflow-green hover:bg-fitflow-green/90 text-white">
+            <Button
+              onClick={() => handleStartWorkout()}
+              className="w-full bg-fitflow-green hover:bg-fitflow-green/90 text-white"
+            >
               <Play size={20} className="mr-2" />
               Iniciar Treino
             </Button>
@@ -95,7 +100,7 @@ const WorkoutsScreen = () => {
 
           <div className="space-y-3">
             <h4 className="font-semibold text-lg">Exercícios</h4>
-            {exercises.map((exercise, index) => (
+            {todayTemplate.exercises.map((exercise, index) => (
               <Card key={index} className="p-4 shadow-card hover:shadow-card-hover transition-smooth">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -105,7 +110,7 @@ const WorkoutsScreen = () => {
                     <div>
                       <h5 className="font-semibold">{exercise.name}</h5>
                       <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
-                        <span>{exercise.sets}</span>
+                        <span>{exercise.sets}x{exercise.reps}</span>
                         <span>•</span>
                         <span>Descanso: {exercise.rest}</span>
                       </div>
@@ -118,6 +123,26 @@ const WorkoutsScreen = () => {
               </Card>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* No workouts created yet */}
+      {activeTab === 'today' && !todayTemplate && (
+        <div className="space-y-4 animate-slide-up">
+          <Card className="p-8 text-center">
+            <Target size={48} className="mx-auto mb-4 text-muted-foreground opacity-50" />
+            <h3 className="text-lg font-semibold mb-2">Nenhum treino disponível</h3>
+            <p className="text-muted-foreground mb-4">
+              Crie seu primeiro treino para começar
+            </p>
+            <Button
+              onClick={() => setShowWorkoutCreator(true)}
+              className="bg-fitflow-green hover:bg-fitflow-green/90"
+            >
+              <Plus size={16} className="mr-2" />
+              Criar Treino
+            </Button>
+          </Card>
         </div>
       )}
 
@@ -140,13 +165,13 @@ const WorkoutsScreen = () => {
                   </div>
                   <div>
                     <h5 className="font-semibold">{workout.name}</h5>
-                    <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
-                      <span>{workout.date}</span>
-                      <span>•</span>
-                      <span>{workout.duration}</span>
-                      <span>•</span>
-                      <span>{workout.exercises} exercícios</span>
-                    </div>
+                     <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
+                       <span>{formatDate(workout.date)}</span>
+                       <span>•</span>
+                       <span>{workout.duration} min</span>
+                       <span>•</span>
+                       <span>{workout.exercises} exercícios</span>
+                     </div>
                   </div>
                 </div>
                 <Button variant="ghost" size="sm">
@@ -164,7 +189,10 @@ const WorkoutsScreen = () => {
           <h3 className="text-lg font-semibold">Criar Novo Treino</h3>
           
           <div className="grid grid-cols-2 gap-4">
-            <Card className="p-4 shadow-card hover:shadow-card-hover transition-smooth cursor-pointer">
+            <Card 
+              onClick={() => setShowWorkoutCreator(true)}
+              className="p-4 shadow-card hover:shadow-card-hover transition-smooth cursor-pointer"
+            >
               <div className="text-center">
                 <div className="w-12 h-12 bg-fitflow-green/10 rounded-lg flex items-center justify-center mx-auto mb-3">
                   <Target size={24} className="text-fitflow-green" />
@@ -174,30 +202,85 @@ const WorkoutsScreen = () => {
               </div>
             </Card>
             
-            <Card className="p-4 shadow-card hover:shadow-card-hover transition-smooth cursor-pointer">
+            <Card 
+              onClick={() => setShowExerciseLibrary(true)}
+              className="p-4 shadow-card hover:shadow-card-hover transition-smooth cursor-pointer"
+            >
               <div className="text-center">
                 <div className="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center mx-auto mb-3">
                   <Zap size={24} className="text-blue-500" />
                 </div>
-                <h4 className="font-semibold">Template</h4>
-                <p className="text-xs text-muted-foreground mt-1">Use um modelo</p>
+                <h4 className="font-semibold">Biblioteca de Exercícios</h4>
+                <p className="text-xs text-muted-foreground mt-1">Explore exercícios</p>
               </div>
             </Card>
           </div>
-          
-          <Card className="p-4 shadow-card">
-            <h4 className="font-semibold mb-3">Templates Populares</h4>
-            <div className="space-y-2">
-              {['Push Pull Legs', 'Upper Lower Split', 'Full Body', 'Bro Split'].map((template, index) => (
-                <Button key={index} variant="outline" className="w-full justify-start">
-                  <Plus size={16} className="mr-2" />
-                  {template}
-                </Button>
-              ))}
+
+          {/* Existing Templates */}
+          {workoutTemplates.length > 0 && (
+            <div>
+              <h4 className="font-semibold mb-3">Seus Treinos</h4>
+              <div className="space-y-2">
+                {workoutTemplates.map((template) => (
+                  <Card key={template.id} className="p-4 shadow-card hover:shadow-card-hover transition-smooth">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-fitflow-green/10 rounded-lg flex items-center justify-center">
+                          <Target size={20} className="text-fitflow-green" />
+                        </div>
+                        <div>
+                          <h5 className="font-semibold">{template.name}</h5>
+                          <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
+                            <span>{template.category}</span>
+                            <span>•</span>
+                            <span>{template.difficulty}</span>
+                            <span>•</span>
+                            <span>{template.exercises.length} exercícios</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          onClick={() => handleStartWorkout(template)}
+                          variant="ghost"
+                          size="sm"
+                          className="text-fitflow-green hover:bg-fitflow-green/10"
+                        >
+                          <Play size={16} />
+                        </Button>
+                        <Button
+                          onClick={() => deleteWorkoutTemplate(template.id)}
+                          variant="ghost"
+                          size="sm"
+                          className="text-destructive hover:bg-destructive/10"
+                        >
+                          <Trash2 size={16} />
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
             </div>
-          </Card>
+          )}
         </div>
       )}
+
+      {/* Modals */}
+      <ActiveWorkoutModal 
+        open={showActiveWorkout} 
+        onClose={() => setShowActiveWorkout(false)} 
+      />
+      
+      <WorkoutCreatorModal 
+        open={showWorkoutCreator} 
+        onClose={() => setShowWorkoutCreator(false)} 
+      />
+      
+      <ExerciseLibraryModal 
+        open={showExerciseLibrary} 
+        onClose={() => setShowExerciseLibrary(false)} 
+      />
     </div>
   );
 };
