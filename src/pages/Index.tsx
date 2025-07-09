@@ -8,6 +8,9 @@ import ProgressScreen from '@/components/Progress/ProgressScreen';
 import ProfileScreen from '@/components/Profile/ProfileScreen';
 import { NutritionProvider } from '@/contexts/NutritionContext';
 import { WorkoutProvider } from '@/contexts/WorkoutContext';
+import { SettingsProvider } from '@/contexts/SettingsContext';
+import { ProgressProvider } from '@/contexts/ProgressContext';
+import SettingsScreen from '@/components/Settings/SettingsScreen';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState('home');
@@ -23,20 +26,26 @@ const Index = () => {
       case 'progress':
         return <ProgressScreen />;
       case 'profile':
-        return <ProfileScreen />;
+        return <ProfileScreen onNavigateToSettings={() => setActiveTab('settings')} />;
+      case 'settings':
+        return <SettingsScreen />;
       default:
         return <Dashboard onTabChange={setActiveTab} />;
     }
   };
 
   return (
-    <NutritionProvider>
-      <WorkoutProvider>
-        <MainLayout activeTab={activeTab} onTabChange={setActiveTab}>
-          {renderContent()}
-        </MainLayout>
-      </WorkoutProvider>
-    </NutritionProvider>
+    <SettingsProvider>
+      <ProgressProvider>
+        <NutritionProvider>
+          <WorkoutProvider>
+            <MainLayout activeTab={activeTab} onTabChange={setActiveTab}>
+              {renderContent()}
+            </MainLayout>
+          </WorkoutProvider>
+        </NutritionProvider>
+      </ProgressProvider>
+    </SettingsProvider>
   );
 };
 

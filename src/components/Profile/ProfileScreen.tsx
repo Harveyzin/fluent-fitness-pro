@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
-import { User, Settings, Bell, Shield, HelpCircle, LogOut, Crown, Zap } from 'lucide-react';
+import { User, Settings, Bell, Shield, HelpCircle, LogOut, Crown, Zap, ChevronRight } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 
-const ProfileScreen = () => {
+interface ProfileScreenProps {
+  onNavigateToSettings?: () => void;
+}
+
+const ProfileScreen = ({ onNavigateToSettings }: ProfileScreenProps = {}) => {
   const [isTrainerMode, setIsTrainerMode] = useState(false);
   const [notifications, setNotifications] = useState(true);
 
@@ -25,7 +29,7 @@ const ProfileScreen = () => {
   ];
 
   const menuItems = [
-    { icon: Settings, label: 'Configurações', badge: null },
+    { icon: Settings, label: 'Configurações', badge: null, action: onNavigateToSettings },
     { icon: Bell, label: 'Notificações', badge: null },
     { icon: Shield, label: 'Privacidade', badge: null },
     { icon: Crown, label: 'Plano Premium', badge: 'Novo' },
@@ -133,7 +137,11 @@ const ProfileScreen = () => {
         {menuItems.map((item, index) => {
           const Icon = item.icon;
           return (
-            <Card key={index} className="shadow-card hover:shadow-card-hover transition-smooth cursor-pointer">
+            <Card 
+              key={index} 
+              className="shadow-card hover:shadow-card-hover transition-smooth cursor-pointer"
+              onClick={item.action}
+            >
               <div className="p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Icon size={20} className="text-muted-foreground" />
@@ -150,6 +158,9 @@ const ProfileScreen = () => {
                       checked={notifications}
                       onCheckedChange={setNotifications}
                     />
+                  )}
+                  {item.label !== 'Notificações' && (
+                    <ChevronRight size={16} className="text-muted-foreground" />
                   )}
                 </div>
               </div>
