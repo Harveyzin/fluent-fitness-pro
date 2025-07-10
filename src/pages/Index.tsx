@@ -10,6 +10,7 @@ import { NutritionProvider } from '@/contexts/NutritionContext';
 import { WorkoutProvider } from '@/contexts/WorkoutContext';
 import { SettingsProvider } from '@/contexts/SettingsContext';
 import { ProgressProvider } from '@/contexts/ProgressContext';
+import { TrainerProvider } from '@/contexts/TrainerContext';
 import SettingsScreen from '@/components/Settings/SettingsScreen';
 
 const Index = () => {
@@ -37,13 +38,15 @@ const Index = () => {
   return (
     <SettingsProvider>
       <ProgressProvider>
-        <NutritionProvider>
-          <WorkoutProvider>
-            <MainLayout activeTab={activeTab} onTabChange={setActiveTab}>
-              {renderContent()}
-            </MainLayout>
-          </WorkoutProvider>
-        </NutritionProvider>
+        <TrainerProvider>
+          <NutritionProvider>
+            <WorkoutProvider>
+              <MainLayout activeTab={activeTab} onTabChange={setActiveTab}>
+                {renderContent()}
+              </MainLayout>
+            </WorkoutProvider>
+          </NutritionProvider>
+        </TrainerProvider>
       </ProgressProvider>
     </SettingsProvider>
   );

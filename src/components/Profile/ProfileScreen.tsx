@@ -5,6 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import TrainerDashboard from '@/components/Trainer/TrainerDashboard';
+import StudentManagement from '@/components/Trainer/StudentManagement';
+import MarketplaceModal from '@/components/Trainer/MarketplaceModal';
+import PremiumUpgradeModal from '@/components/Premium/PremiumUpgradeModal';
+import { useToast } from '@/hooks/use-toast';
 
 interface ProfileScreenProps {
   onNavigateToSettings?: () => void;
@@ -13,6 +19,10 @@ interface ProfileScreenProps {
 const ProfileScreen = ({ onNavigateToSettings }: ProfileScreenProps = {}) => {
   const [isTrainerMode, setIsTrainerMode] = useState(false);
   const [notifications, setNotifications] = useState(true);
+  const [currentView, setCurrentView] = useState<'profile' | 'trainer-dashboard' | 'students' | 'marketplace'>('profile');
+  const [showMarketplace, setShowMarketplace] = useState(false);
+  const [showPremiumUpgrade, setShowPremiumUpgrade] = useState(false);
+  const { toast } = useToast();
 
   const userStats = [
     { label: 'Dias Consecutivos', value: '7', color: 'text-fitflow-green' },
@@ -28,13 +38,75 @@ const ProfileScreen = ({ onNavigateToSettings }: ProfileScreenProps = {}) => {
     { label: 'Receita Mensal', value: 'R$ 2.8k', color: 'text-purple-500' }
   ];
 
+  const handleLogout = () => {
+    toast({
+      title: "Logout realizado",
+      description: "Você foi desconectado com sucesso. Até logo!"
+    });
+    // Here you would typically clear auth state and redirect
+  };
+
+  const handlePremiumUpgrade = () => {
+    setShowPremiumUpgrade(true);
+  };
+
   const menuItems = [
     { icon: Settings, label: 'Configurações', badge: null, action: onNavigateToSettings },
     { icon: Bell, label: 'Notificações', badge: null },
     { icon: Shield, label: 'Privacidade', badge: null },
-    { icon: Crown, label: 'Plano Premium', badge: 'Novo' },
+    { icon: Crown, label: 'Plano Premium', badge: 'Novo', action: handlePremiumUpgrade },
     { icon: HelpCircle, label: 'Ajuda & Suporte', badge: null },
   ];
+
+  // Navigation functions for trainer mode
+  const handleTrainerModeToggle = (enabled: boolean) => {
+    setIsTrainerMode(enabled);
+    if (enabled) {
+      setCurrentView('trainer-dashboard');
+    } else {
+      setCurrentView('profile');
+    }
+  };
+
+  const navigateToStudents = () => setCurrentView('students');
+  const navigateToTrainerDashboard = () => setCurrentView('trainer-dashboard');
+  const navigateToMarketplace = () => setShowMarketplace(true);
+  const navigateToProfile = () => {
+    setCurrentView('profile');
+    setIsTrainerMode(false);
+  };
+
+  // Render different views based on current state
+  if (currentView === 'trainer-dashboard') {
+    return (
+      <div className="container mx-auto px-4 py-6 space-y-6">
+        <div className="flex items-center gap-4 mb-4">
+          <Button variant="outline" onClick={navigateToProfile}>
+            ← Voltar ao Perfil
+          </Button>
+        </div>
+        <TrainerDashboard 
+          onManageStudents={navigateToStudents}
+          onCreateWorkout={() => toast({ title: "Criar Treino", description: "Funcionalidade será implementada" })}
+          onMarketplace={navigateToMarketplace}
+        />
+        <MarketplaceModal isOpen={showMarketplace} onClose={() => setShowMarketplace(false)} />
+      </div>
+    );
+  }
+
+  if (currentView === 'students') {
+    return (
+      <div className="container mx-auto px-4 py-6 space-y-6">
+        <div className="flex items-center gap-4 mb-4">
+          <Button variant="outline" onClick={navigateToTrainerDashboard}>
+            ← Voltar ao Dashboard
+          </Button>
+        </div>
+        <StudentManagement />
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-6 space-y-6">
@@ -83,7 +155,7 @@ const ProfileScreen = ({ onNavigateToSettings }: ProfileScreenProps = {}) => {
             </div>
             <Switch
               checked={isTrainerMode}
-              onCheckedChange={setIsTrainerMode}
+              onCheckedChange={handleTrainerModeToggle}
             />
           </div>
         </div>
@@ -112,19 +184,19 @@ const ProfileScreen = ({ onNavigateToSettings }: ProfileScreenProps = {}) => {
             Ferramentas do Personal
           </h3>
           <div className="grid grid-cols-2 gap-3">
-            <Button variant="outline" className="h-auto p-4 flex flex-col gap-2">
+            <Button variant="outline" className="h-auto p-4 flex flex-col gap-2" onClick={navigateToStudents}>
               <User size={24} className="text-fitflow-green" />
               <span className="text-sm font-medium">Meus Alunos</span>
             </Button>
-            <Button variant="outline" className="h-auto p-4 flex flex-col gap-2">
+            <Button variant="outline" className="h-auto p-4 flex flex-col gap-2" onClick={() => toast({ title: "Criar Treino", description: "Funcionalidade será implementada" })}>
               <Settings size={24} className="text-blue-500" />
               <span className="text-sm font-medium">Criar Treino</span>
             </Button>
-            <Button variant="outline" className="h-auto p-4 flex flex-col gap-2">
+            <Button variant="outline" className="h-auto p-4 flex flex-col gap-2" onClick={() => toast({ title: "Avaliações", description: "Visualizar avaliações dos alunos" })}>
               <Bell size={24} className="text-orange-500" />
               <span className="text-sm font-medium">Avaliações</span>
             </Button>
-            <Button variant="outline" className="h-auto p-4 flex flex-col gap-2">
+            <Button variant="outline" className="h-auto p-4 flex flex-col gap-2" onClick={navigateToMarketplace}>
               <Crown size={24} className="text-purple-500" />
               <span className="text-sm font-medium">Marketplace</span>
             </Button>
@@ -170,17 +242,39 @@ const ProfileScreen = ({ onNavigateToSettings }: ProfileScreenProps = {}) => {
       </div>
 
       {/* Logout */}
-      <Card className="shadow-card hover:shadow-card-hover transition-smooth cursor-pointer animate-slide-up">
-        <div className="p-4 flex items-center gap-3">
-          <LogOut size={20} className="text-red-500" />
-          <span className="font-medium text-red-500">Sair da Conta</span>
-        </div>
-      </Card>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Card className="shadow-card hover:shadow-card-hover transition-smooth cursor-pointer animate-slide-up">
+            <div className="p-4 flex items-center gap-3">
+              <LogOut size={20} className="text-red-500" />
+              <span className="font-medium text-red-500">Sair da Conta</span>
+            </div>
+          </Card>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar Logout</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja sair da sua conta? Você precisará fazer login novamente para acessar seus dados.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleLogout} className="bg-red-500 hover:bg-red-600">
+              Sair da Conta
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Version Info */}
       <div className="text-center text-sm text-muted-foreground animate-slide-up">
         FitFlow Pro v1.0.0
       </div>
+
+      {/* Modals */}
+      <MarketplaceModal isOpen={showMarketplace} onClose={() => setShowMarketplace(false)} />
+      <PremiumUpgradeModal isOpen={showPremiumUpgrade} onClose={() => setShowPremiumUpgrade(false)} />
     </div>
   );
 };
