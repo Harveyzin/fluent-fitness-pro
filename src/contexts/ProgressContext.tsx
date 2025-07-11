@@ -79,10 +79,35 @@ const sampleNutritionProgress: NutritionProgress[] = [
 ];
 
 export const ProgressProvider = ({ children }: { children: ReactNode }) => {
-  const [bodyProgress, setBodyProgress] = useState<ProgressEntry[]>(sampleBodyProgress);
-  const [workoutProgress, setWorkoutProgress] = useState<WorkoutProgress[]>(sampleWorkoutProgress);
-  const [nutritionProgress, setNutritionProgress] = useState<NutritionProgress[]>(sampleNutritionProgress);
+  const [bodyProgress, setBodyProgress] = useState<ProgressEntry[]>(() => {
+    const saved = localStorage.getItem('fitflow-body-progress');
+    return saved ? JSON.parse(saved) : sampleBodyProgress;
+  });
+  
+  const [workoutProgress, setWorkoutProgress] = useState<WorkoutProgress[]>(() => {
+    const saved = localStorage.getItem('fitflow-workout-progress');
+    return saved ? JSON.parse(saved) : sampleWorkoutProgress;
+  });
+  
+  const [nutritionProgress, setNutritionProgress] = useState<NutritionProgress[]>(() => {
+    const saved = localStorage.getItem('fitflow-nutrition-progress');
+    return saved ? JSON.parse(saved) : sampleNutritionProgress;
+  });
+  
   const [timeFilter, setTimeFilter] = useState<TimeFilter>('30d');
+
+  // Persist data to localStorage
+  React.useEffect(() => {
+    localStorage.setItem('fitflow-body-progress', JSON.stringify(bodyProgress));
+  }, [bodyProgress]);
+
+  React.useEffect(() => {
+    localStorage.setItem('fitflow-workout-progress', JSON.stringify(workoutProgress));
+  }, [workoutProgress]);
+
+  React.useEffect(() => {
+    localStorage.setItem('fitflow-nutrition-progress', JSON.stringify(nutritionProgress));
+  }, [nutritionProgress]);
 
   const addBodyProgress = (entry: Omit<ProgressEntry, 'date'>) => {
     setBodyProgress(prev => [...prev, { ...entry, date: new Date() }]);

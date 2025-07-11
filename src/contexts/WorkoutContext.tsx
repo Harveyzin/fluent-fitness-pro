@@ -146,31 +146,56 @@ const defaultTemplates: WorkoutTemplate[] = [
 ];
 
 export const WorkoutProvider = ({ children }: { children: ReactNode }) => {
-  const [workoutTemplates, setWorkoutTemplates] = useState<WorkoutTemplate[]>(defaultTemplates);
-  const [activeWorkout, setActiveWorkout] = useState<ActiveWorkout | null>(null);
-  const [workoutHistory, setWorkoutHistory] = useState<CompletedWorkout[]>([
-    {
-      id: '1',
-      templateId: '1',
-      name: 'Treino de Costas',
-      date: new Date(Date.now() - 24 * 60 * 60 * 1000),
-      duration: 52,
-      exercises: 7,
-      completedSets: 21,
-      totalReps: 245
-    },
-    {
-      id: '2',
-      templateId: '1',
-      name: 'Treino de Pernas',
-      date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-      duration: 68,
-      exercises: 8,
-      completedSets: 24,
-      totalReps: 312
-    }
-  ]);
+  const [workoutTemplates, setWorkoutTemplates] = useState<WorkoutTemplate[]>(() => {
+    const saved = localStorage.getItem('fitflow-workout-templates');
+    return saved ? JSON.parse(saved) : defaultTemplates;
+  });
+  
+  const [activeWorkout, setActiveWorkout] = useState<ActiveWorkout | null>(() => {
+    const saved = localStorage.getItem('fitflow-active-workout');
+    return saved ? JSON.parse(saved) : null;
+  });
+  
+  const [workoutHistory, setWorkoutHistory] = useState<CompletedWorkout[]>(() => {
+    const saved = localStorage.getItem('fitflow-workout-history');
+    return saved ? JSON.parse(saved) : [
+      {
+        id: '1',
+        templateId: '1',
+        name: 'Treino de Costas',
+        date: new Date(Date.now() - 24 * 60 * 60 * 1000),
+        duration: 52,
+        exercises: 7,
+        completedSets: 21,
+        totalReps: 245
+      },
+      {
+        id: '2',
+        templateId: '1',
+        name: 'Treino de Pernas',
+        date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+        duration: 68,
+        exercises: 8,
+        completedSets: 24,
+        totalReps: 312
+      }
+    ];
+  });
+  
   const [exerciseLibrary] = useState<Exercise[]>(defaultExercises);
+
+  // Persist data to localStorage
+  React.useEffect(() => {
+    localStorage.setItem('fitflow-workout-templates', JSON.stringify(workoutTemplates));
+  }, [workoutTemplates]);
+
+  React.useEffect(() => {
+    localStorage.setItem('fitflow-active-workout', JSON.stringify(activeWorkout));
+  }, [activeWorkout]);
+
+  React.useEffect(() => {
+    localStorage.setItem('fitflow-workout-history', JSON.stringify(workoutHistory));
+  }, [workoutHistory]);
 
   const createWorkoutTemplate = (template: Omit<WorkoutTemplate, 'id'>) => {
     const newTemplate: WorkoutTemplate = {

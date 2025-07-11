@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -84,6 +84,12 @@ const WorkoutCreatorModal = ({ open, onClose, editingTemplate }: WorkoutCreatorM
             <DialogTitle>
               {editingTemplate ? 'Editar Treino' : 'Criar Novo Treino'}
             </DialogTitle>
+            <DialogDescription>
+              {editingTemplate 
+                ? 'Modifique os exercícios e configurações do seu treino'
+                : 'Monte um treino personalizado selecionando exercícios e definindo séries'
+              }
+            </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-6">
@@ -255,6 +261,9 @@ const WorkoutCreatorModal = ({ open, onClose, editingTemplate }: WorkoutCreatorM
           <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle>Editar Exercício</DialogTitle>
+              <DialogDescription>
+                Ajuste as séries, repetições e tempo de descanso para este exercício
+              </DialogDescription>
             </DialogHeader>
             <ExerciseEditForm
               exercise={editingExercise}

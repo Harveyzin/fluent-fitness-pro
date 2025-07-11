@@ -61,7 +61,12 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				'fitflow-green': 'hsl(var(--fitflow-green))',
+				'fitflow-blue': 'hsl(var(--fitflow-blue))',
+				'fitflow-orange': 'hsl(var(--fitflow-orange))',
+				'fitflow-purple': 'hsl(var(--fitflow-purple))',
+				'fitflow-red': 'hsl(var(--fitflow-red))'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useSettings } from '@/contexts/SettingsContext';
 import { useToast } from '@/hooks/use-toast';
@@ -250,6 +250,9 @@ const SettingsScreen = () => {
           <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Central de Ajuda</DialogTitle>
+              <DialogDescription>
+                Encontre respostas para as perguntas mais frequentes sobre o FitFlow Pro
+              </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               <h3 className="font-semibold text-lg">Perguntas Frequentes</h3>
@@ -306,6 +309,9 @@ const SettingsScreen = () => {
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Excluir Conta</DialogTitle>
+                <DialogDescription>
+                  Confirme a exclusão permanente da sua conta e todos os dados associados
+                </DialogDescription>
               </DialogHeader>
               <Alert>
                 <AlertDescription>

@@ -32,6 +32,13 @@
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --fitflow-green: 162 64% 36%;
+    --fitflow-blue: 217 91% 60%;
+    --fitflow-orange: 25 95% 53%;
+    --fitflow-purple: 262 83% 58%;
+    --fitflow-red: 0 84% 60%;
+    --gradient-primary: linear-gradient(135deg, hsl(var(--fitflow-green)), hsl(var(--fitflow-blue)));
+    --gradient-secondary: linear-gradient(135deg, hsl(var(--fitflow-orange)), hsl(var(--fitflow-red)));
+    --shadow-colored: 0 10px 25px -5px hsl(var(--fitflow-green) / 0.25);
   }
 
   .dark {
@@ -60,6 +67,13 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
     --fitflow-green: 162 64% 36%;
+    --fitflow-blue: 217 91% 60%;
+    --fitflow-orange: 25 95% 53%;
+    --fitflow-purple: 262 83% 58%;
+    --fitflow-red: 0 84% 60%;
+    --gradient-primary: linear-gradient(135deg, hsl(var(--fitflow-green)), hsl(var(--fitflow-blue)));
+    --gradient-secondary: linear-gradient(135deg, hsl(var(--fitflow-orange)), hsl(var(--fitflow-red)));
+    --shadow-colored: 0 10px 25px -5px hsl(var(--fitflow-green) / 0.25);
   }
 }
 

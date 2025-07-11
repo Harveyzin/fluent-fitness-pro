@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Crown, Check, Zap, Star, Shield, Smartphone } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -119,6 +119,9 @@ const PremiumUpgradeModal = ({ isOpen, onClose }: PremiumUpgradeModalProps) => {
             <Crown className="text-fitflow-green" size={24} />
             Upgrade para Premium
           </DialogTitle>
+          <DialogDescription>
+            Escolha o plano ideal para sua jornada fitness e desbloqueie recursos avançados
+          </DialogDescription>
         </DialogHeader>
 
         <Tabs defaultValue="plans" className="w-full">
