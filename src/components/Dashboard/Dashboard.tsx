@@ -1,9 +1,10 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Calendar, Target, Zap, TrendingUp, Plus, Bell, Dumbbell, Apple } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { LoadingSkeleton } from '@/components/ui/loading-skeleton';
 import { useNutrition } from '@/contexts/NutritionContext';
 
 interface DashboardProps {
@@ -12,6 +13,7 @@ interface DashboardProps {
 
 const Dashboard: React.FC<DashboardProps> = ({ onTabChange }) => {
   const { getDailyTotals, nutritionData } = useNutrition();
+  const [isLoading, setIsLoading] = useState(false);
   const dailyTotals = getDailyTotals();
   
   const today = new Date().toLocaleDateString('pt-BR', { 
@@ -26,7 +28,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onTabChange }) => {
       value: dailyTotals.calories.toString(), 
       target: nutritionData.dailyGoals.calories.toString(), 
       progress: Math.min((dailyTotals.calories / nutritionData.dailyGoals.calories) * 100, 100), 
-      color: 'bg-fitflow-green' 
+      color: 'bg-primary' 
     },
     { 
       label: 'Proteínas', 
@@ -55,7 +57,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onTabChange }) => {
     { 
       icon: Plus, 
       label: 'Adicionar Refeição', 
-      color: 'bg-fitflow-green',
+      color: 'bg-primary',
       action: () => onTabChange('nutrition')
     },
     { 
@@ -82,18 +84,31 @@ const Dashboard: React.FC<DashboardProps> = ({ onTabChange }) => {
     (dailyTotals.calories / nutritionData.dailyGoals.calories) * 100
   );
 
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-6 space-y-6">
+        <LoadingSkeleton variant="card" />
+        <LoadingSkeleton variant="chart" />
+        <div className="grid grid-cols-2 gap-4">
+          <LoadingSkeleton variant="card" />
+          <LoadingSkeleton variant="card" />
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="container mx-auto px-4 py-6 space-y-6">
+    <div className="container mx-auto px-4 py-6 space-y-6 max-w-4xl">
       {/* Welcome Section */}
       <div className="animate-slide-up">
         <div className="flex items-center justify-between mb-2">
           <div>
-            <h2 className="text-2xl font-bold text-foreground">Olá, João! 👋</h2>
-            <p className="text-muted-foreground capitalize">{today}</p>
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground">Olá, João! 👋</h2>
+            <p className="text-muted-foreground capitalize text-sm md:text-base">{today}</p>
           </div>
           <Button variant="ghost" size="sm" className="relative">
             <Bell size={20} />
-            <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></div>
+            <div className="absolute -top-1 -right-1 w-3 h-3 bg-destructive rounded-full animate-pulse"></div>
           </Button>
         </div>
       </div>
@@ -102,11 +117,11 @@ const Dashboard: React.FC<DashboardProps> = ({ onTabChange }) => {
       <Card className="p-6 shadow-card hover:shadow-card-hover transition-smooth animate-scale-in">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold flex items-center gap-2">
-            <Calendar className="text-fitflow-green" size={20} />
+            <Calendar className="text-primary" size={20} />
             Progresso do Dia
           </h3>
           <div className="text-right">
-            <div className="text-2xl font-bold text-fitflow-green">{overallProgress}%</div>
+            <div className="text-2xl font-bold text-primary">{overallProgress}%</div>
             <p className="text-sm text-muted-foreground">do objetivo</p>
           </div>
         </div>
@@ -127,10 +142,10 @@ const Dashboard: React.FC<DashboardProps> = ({ onTabChange }) => {
       {/* Quick Actions */}
       <div className="animate-slide-up">
         <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-          <Zap className="text-fitflow-green" size={20} />
+          <Zap className="text-primary" size={20} />
           Ações Rápidas
         </h3>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
           {quickActions.map((action, index) => {
             const Icon = action.icon;
             return (
@@ -154,15 +169,15 @@ const Dashboard: React.FC<DashboardProps> = ({ onTabChange }) => {
       {/* Recent Activity */}
       <Card className="p-6 shadow-card animate-slide-up">
         <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-          <TrendingUp className="text-fitflow-green" size={20} />
+          <TrendingUp className="text-primary" size={20} />
           Atividade Recente
         </h3>
         <div className="space-y-4">
           {nutritionData.items.slice(-3).reverse().map((item, index) => (
             <div key={index} className="flex items-center justify-between py-2 border-b border-border/50">
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-fitflow-green/10 rounded-lg flex items-center justify-center">
-                  <Apple size={16} className="text-fitflow-green" />
+                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <Apple size={16} className="text-primary" />
                 </div>
                 <div>
                   <p className="font-medium text-sm">{item.food.name} adicionado</p>
@@ -173,7 +188,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onTabChange }) => {
                   </p>
                 </div>
               </div>
-              <span className="text-sm font-medium text-fitflow-green">
+              <span className="text-sm font-medium text-primary">
                 +{Math.round((item.food.calories_per_100g * item.quantity) / 100)} cal
               </span>
             </div>

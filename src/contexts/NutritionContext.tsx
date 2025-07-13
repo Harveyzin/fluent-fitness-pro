@@ -45,6 +45,7 @@ interface NutritionContextType {
     fat: number;
   };
   searchFoods: (query: string) => Food[];
+  addFood: (mealType: 'breakfast' | 'lunch' | 'snack' | 'dinner', food: Food, quantity: number) => void;
 }
 
 const NutritionContext = createContext<NutritionContextType | undefined>(undefined);
@@ -209,6 +210,15 @@ export const NutritionProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     );
   };
 
+  const addFood = (mealType: 'breakfast' | 'lunch' | 'snack' | 'dinner', food: Food, quantity: number) => {
+    const mealItem: MealItem = {
+      food: { ...food, category: food.category || 'Outros' },
+      quantity,
+      mealType
+    };
+    addMealItem(mealItem);
+  };
+
   return (
     <NutritionContext.Provider value={{
       nutritionData,
@@ -217,7 +227,8 @@ export const NutritionProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       updateDailyGoals,
       getTotalsByMeal,
       getDailyTotals,
-      searchFoods
+      searchFoods,
+      addFood
     }}>
       {children}
     </NutritionContext.Provider>

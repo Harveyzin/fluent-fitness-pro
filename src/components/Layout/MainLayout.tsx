@@ -21,28 +21,28 @@ const MainLayout = ({ children, activeTab, onTabChange }: MainLayoutProps) => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <header className="bg-white/95 backdrop-blur-md border-b border-border/50 sticky top-0 z-50">
+      <header className="bg-background/95 backdrop-blur-md border-b border-border/50 sticky top-0 z-50">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-fitflow-green rounded-lg flex items-center justify-center">
-              <div className="w-4 h-4 bg-white rounded-sm"></div>
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+              <div className="w-4 h-4 bg-primary-foreground rounded-sm"></div>
             </div>
             <h1 className="text-xl font-bold text-foreground">FitFlow Pro</h1>
           </div>
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-gray-100 rounded-full"></div>
+            <div className="w-8 h-8 bg-muted rounded-full"></div>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 pb-20">
+      <main className="flex-1 pb-20 px-safe">
         {children}
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-border/50 z-50">
-        <div className="grid grid-cols-5 h-16">
+      <nav className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-md border-t border-border/50 z-50 pb-safe">
+        <div className="grid grid-cols-5 h-16 max-w-md mx-auto">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -52,16 +52,16 @@ const MainLayout = ({ children, activeTab, onTabChange }: MainLayoutProps) => {
                 key={tab.id}
                 onClick={() => onTabChange(tab.id)}
                 className={cn(
-                  "flex flex-col items-center justify-center space-y-1 transition-smooth",
+                  "flex flex-col items-center justify-center space-y-1 transition-smooth px-2",
                   isActive
-                    ? "text-fitflow-green"
+                    ? "text-primary"
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 <Icon size={20} className={cn(isActive && "scale-110")} />
-                <span className="text-xs font-medium">{tab.label}</span>
+                <span className="text-xs font-medium truncate">{tab.label}</span>
                 {isActive && (
-                  <div className="w-1 h-1 bg-fitflow-green rounded-full"></div>
+                  <div className="w-1 h-1 bg-primary rounded-full"></div>
                 )}
               </button>
             );

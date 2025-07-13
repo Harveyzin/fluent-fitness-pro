@@ -94,8 +94,25 @@ export default {
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out'
-			}
+			},
+			spacing: {
+				'safe': 'env(safe-area-inset-bottom)',
+			},
 		}
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [
+		require("tailwindcss-animate"),
+		function({ addUtilities }: any) {
+			const newUtilities = {
+				'.px-safe': {
+					paddingLeft: 'env(safe-area-inset-left)',
+					paddingRight: 'env(safe-area-inset-right)',
+				},
+				'.pb-safe': {
+					paddingBottom: 'env(safe-area-inset-bottom)',
+				},
+			}
+			addUtilities(newUtilities)
+		}
+	],
 } satisfies Config;
