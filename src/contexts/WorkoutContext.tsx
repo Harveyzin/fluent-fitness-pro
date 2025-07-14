@@ -153,12 +153,20 @@ export const WorkoutProvider = ({ children }: { children: ReactNode }) => {
   
   const [activeWorkout, setActiveWorkout] = useState<ActiveWorkout | null>(() => {
     const saved = localStorage.getItem('fitflow-active-workout');
-    return saved ? JSON.parse(saved) : null;
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return parsed ? { ...parsed, startTime: new Date(parsed.startTime) } : null;
+    }
+    return null;
   });
   
   const [workoutHistory, setWorkoutHistory] = useState<CompletedWorkout[]>(() => {
     const saved = localStorage.getItem('fitflow-workout-history');
-    return saved ? JSON.parse(saved) : [
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return parsed.map((workout: any) => ({ ...workout, date: new Date(workout.date) }));
+    }
+    return [
       {
         id: '1',
         templateId: '1',
