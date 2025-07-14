@@ -81,17 +81,29 @@ const sampleNutritionProgress: NutritionProgress[] = [
 export const ProgressProvider = ({ children }: { children: ReactNode }) => {
   const [bodyProgress, setBodyProgress] = useState<ProgressEntry[]>(() => {
     const saved = localStorage.getItem('fitflow-body-progress');
-    return saved ? JSON.parse(saved) : sampleBodyProgress;
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return parsed.map((entry: any) => ({ ...entry, date: new Date(entry.date) }));
+    }
+    return sampleBodyProgress;
   });
   
   const [workoutProgress, setWorkoutProgress] = useState<WorkoutProgress[]>(() => {
     const saved = localStorage.getItem('fitflow-workout-progress');
-    return saved ? JSON.parse(saved) : sampleWorkoutProgress;
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return parsed.map((entry: any) => ({ ...entry, date: new Date(entry.date) }));
+    }
+    return sampleWorkoutProgress;
   });
   
   const [nutritionProgress, setNutritionProgress] = useState<NutritionProgress[]>(() => {
     const saved = localStorage.getItem('fitflow-nutrition-progress');
-    return saved ? JSON.parse(saved) : sampleNutritionProgress;
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return parsed.map((entry: any) => ({ ...entry, date: new Date(entry.date) }));
+    }
+    return sampleNutritionProgress;
   });
   
   const [timeFilter, setTimeFilter] = useState<TimeFilter>('30d');
