@@ -1,11 +1,15 @@
 
 import React, { useState } from 'react';
-import { Calendar, Target, Zap, TrendingUp, Plus, Bell, Dumbbell, Apple } from 'lucide-react';
+import { Calendar, Target, Zap, TrendingUp, Plus, Bell, Dumbbell, Apple, Trophy } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { LoadingSkeleton } from '@/components/ui/loading-skeleton';
 import { useNutrition } from '@/contexts/NutritionContext';
+import { useAchievements } from '@/hooks/use-achievements';
+import AchievementBadge from '@/components/Achievements/AchievementBadge';
+import AchievementNotification from '@/components/Achievements/AchievementNotification';
+import NotificationSystem from '@/components/Notifications/NotificationSystem';
 
 interface DashboardProps {
   onTabChange: (tab: string) => void;
@@ -13,8 +17,10 @@ interface DashboardProps {
 
 const Dashboard: React.FC<DashboardProps> = ({ onTabChange }) => {
   const { getDailyTotals, nutritionData } = useNutrition();
+  const { achievements, newUnlocks, clearNewUnlocks, getProgress } = useAchievements();
   const [isLoading, setIsLoading] = useState(false);
   const dailyTotals = getDailyTotals();
+  const achievementProgress = getProgress();
   
   const today = new Date().toLocaleDateString('pt-BR', { 
     weekday: 'long', 
@@ -106,10 +112,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onTabChange }) => {
             <h2 className="text-2xl md:text-3xl font-bold text-foreground">Olá, João! 👋</h2>
             <p className="text-muted-foreground capitalize text-sm md:text-base">{today}</p>
           </div>
-          <Button variant="ghost" size="sm" className="relative">
-            <Bell size={20} />
-            <div className="absolute -top-1 -right-1 w-3 h-3 bg-destructive rounded-full animate-pulse"></div>
-          </Button>
+          <NotificationSystem />
         </div>
       </div>
 
@@ -166,6 +169,57 @@ const Dashboard: React.FC<DashboardProps> = ({ onTabChange }) => {
         </div>
       </div>
 
+      {/* Achievements Section */}
+      <div className="animate-slide-up">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold flex items-center gap-2">
+            <Trophy className="text-primary" size={20} />
+            Conquistas Recentes
+          </h3>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => onTabChange('progress')}
+          >
+            Ver Todas
+          </Button>
+        </div>
+        
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+          {achievements
+            .filter(a => a.unlockedAt)
+            .slice(-4)
+            .map(achievement => (
+              <AchievementBadge 
+                key={achievement.id} 
+                achievement={achievement} 
+                size="sm" 
+                showProgress={false}
+              />
+            ))}
+        </div>
+        
+        <Card className="p-4 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border-yellow-500/20">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-semibold text-foreground">Progresso das Conquistas</p>
+              <p className="text-sm text-muted-foreground">
+                {achievementProgress.unlocked} de {achievementProgress.total} desbloqueadas
+              </p>
+            </div>
+            <div className="text-right">
+              <div className="text-2xl font-bold text-yellow-600">
+                {Math.round(achievementProgress.percentage)}%
+              </div>
+              <Progress 
+                value={achievementProgress.percentage} 
+                className="w-24 h-2 mt-1" 
+              />
+            </div>
+          </div>
+        </Card>
+      </div>
+
       {/* Recent Activity */}
       <Card className="p-6 shadow-card animate-slide-up">
         <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
@@ -203,6 +257,15 @@ const Dashboard: React.FC<DashboardProps> = ({ onTabChange }) => {
           )}
         </div>
       </Card>
+
+      {/* Achievement Notifications */}
+      {newUnlocks.map(achievement => (
+        <AchievementNotification
+          key={achievement.id}
+          achievement={achievement}
+          onDismiss={clearNewUnlocks}
+        />
+      ))}
     </div>
   );
 };

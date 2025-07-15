@@ -5,7 +5,8 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useWorkout } from '@/contexts/WorkoutContext';
-import { Play, Pause, SkipForward, Check, X, Timer, Target, Weight } from 'lucide-react';
+import { useTimer } from '@/hooks/use-timer';
+import { Play, Pause, SkipForward, Check, X, Timer, Target, Weight, Volume2 } from 'lucide-react';
 
 interface ActiveWorkoutModalProps {
   open: boolean;
@@ -14,35 +15,44 @@ interface ActiveWorkoutModalProps {
 
 const ActiveWorkoutModal = ({ open, onClose }: ActiveWorkoutModalProps) => {
   const { activeWorkout, endWorkout, nextExercise, completeSet, startRest, skipRest } = useWorkout();
+  const { 
+    timeElapsed, 
+    restTime, 
+    isResting, 
+    isRunning,
+    startTimer, 
+    pauseTimer, 
+    startRest: startRestTimer, 
+    skipRest: skipRestTimer,
+    formatTime,
+    playSound 
+  } = useTimer();
   const [reps, setReps] = useState('');
   const [weight, setWeight] = useState('');
-  const [timeElapsed, setTimeElapsed] = useState(0);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (open && activeWorkout) {
-      interval = setInterval(() => {
-        const elapsed = Math.floor((Date.now() - activeWorkout.startTime.getTime()) / 1000);
-        setTimeElapsed(elapsed);
-
-        if (activeWorkout.isResting && activeWorkout.restTimeLeft > 0) {
-          const newRestTime = activeWorkout.restTimeLeft - 1;
-          if (newRestTime <= 0) {
-            skipRest();
-          }
-        }
-      }, 1000);
+    if (open && activeWorkout && !isRunning) {
+      startTimer();
+      playSound('start');
     }
-    return () => clearInterval(interval);
-  }, [open, activeWorkout, skipRest]);
+  }, [open, activeWorkout, startTimer, isRunning, playSound]);
 
   const handleCompleteSet = () => {
     if (reps) {
       completeSet(parseInt(reps), weight ? parseFloat(weight) : undefined);
       setReps('');
       setWeight('');
-      startRest();
+      
+      // Start rest timer
+      const restDuration = parseInt(currentExercise?.rest?.replace(/\D/g, '') || '60');
+      startRestTimer(restDuration);
+      playSound('rest');
     }
+  };
+
+  const handleSkipRest = () => {
+    skipRestTimer();
+    skipRest();
   };
 
   const handleEndWorkout = () => {
@@ -50,11 +60,6 @@ const ActiveWorkoutModal = ({ open, onClose }: ActiveWorkoutModalProps) => {
     onClose();
   };
 
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
 
   if (!activeWorkout) return null;
 
@@ -95,28 +100,46 @@ const ActiveWorkoutModal = ({ open, onClose }: ActiveWorkoutModalProps) => {
             </div>
           </Card>
 
-          {/* Rest Timer */}
-          {activeWorkout.isResting && (
-            <Card className="p-4 bg-blue-500/10 border-blue-500/20">
+          {/* Enhanced Rest Timer */}
+          {isResting && (
+            <Card className="p-4 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border-blue-500/20 animate-pulse">
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600 mb-2">
-                  {formatTime(activeWorkout.restTimeLeft)}
+                <div className="text-3xl font-bold text-blue-600 mb-2 animate-scale-in">
+                  {formatTime(restTime)}
                 </div>
                 <p className="text-sm text-muted-foreground mb-3">Tempo de descanso</p>
-                <Button
-                  onClick={skipRest}
-                  variant="outline"
-                  size="sm"
-                  className="border-blue-500 text-blue-600 hover:bg-blue-500/10"
-                >
-                  Pular Descanso
-                </Button>
+                
+                <div className="flex gap-2 justify-center">
+                  <Button
+                    onClick={handleSkipRest}
+                    variant="outline"
+                    size="sm"
+                    className="border-blue-500 text-blue-600 hover:bg-blue-500/10"
+                  >
+                    Pular Descanso
+                  </Button>
+                  
+                  <Button
+                    onClick={() => playSound('start')}
+                    variant="ghost"
+                    size="sm"
+                    className="text-blue-600"
+                  >
+                    <Volume2 size={16} />
+                  </Button>
+                </div>
+                
+                {restTime <= 10 && restTime > 0 && (
+                  <div className="mt-2 text-xs text-orange-600 font-medium animate-bounce">
+                    ⏰ Quase pronto!
+                  </div>
+                )}
               </div>
             </Card>
           )}
 
           {/* Current Exercise */}
-          {!activeWorkout.isResting && currentExercise && (
+          {!isResting && currentExercise && (
             <Card className="p-4">
               <div className="space-y-4">
                 <div>
