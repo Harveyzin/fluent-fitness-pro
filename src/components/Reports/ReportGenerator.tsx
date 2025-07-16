@@ -149,13 +149,13 @@ const ReportGenerator = () => {
                 <th>Carboidratos</th>
                 <th>Gorduras</th>
               </tr>
-              ${data.nutrition.map(n => `
+              ${data.nutrition.map(nutritionItem => `
                 <tr>
-                  <td>${n.date.toLocaleDateString('pt-BR')}</td>
-                  <td>${n.calories}</td>
-                  <td>${n.protein}g</td>
-                  <td>${n.carbs}g</td>
-                  <td>${n.fat}g</td>
+                  <td>${nutritionItem.date.toLocaleDateString('pt-BR')}</td>
+                  <td>${nutritionItem.calories}</td>
+                  <td>${nutritionItem.protein}g</td>
+                  <td>${nutritionItem.carbs}g</td>
+                  <td>${nutritionItem.fat}g</td>
                 </tr>
               `).join('')}
             </table>
