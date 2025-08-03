@@ -90,6 +90,8 @@ export const useAchievements = () => {
   const { getDailyTotals, nutritionData } = useNutrition();
 
   const checkAchievements = () => {
+    const dailyTotals = getDailyTotals();
+    
     const updatedAchievements = achievements.map(achievement => {
       let progress = achievement.progress;
       let unlockedAt = achievement.unlockedAt;
@@ -107,7 +109,6 @@ export const useAchievements = () => {
 
         case 'calories_goal':
           // Count days meeting calorie goal
-          const dailyTotals = getDailyTotals();
           const metGoal = dailyTotals.calories >= nutritionData.dailyGoals.calories;
           progress = Math.min(progress + (metGoal ? 1 : 0), achievement.maxProgress);
           break;
