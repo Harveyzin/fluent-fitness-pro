@@ -54,7 +54,7 @@ const WorkoutCreatorModal = ({ open, onClose, editingTemplate }: WorkoutCreatorM
     if (!name.trim() || exercises.length === 0) return;
 
     const estimatedDuration = exercises.length * 4; // Rough estimate: 4 minutes per exercise
-    const durationStr = estimatedDuration < 60 ? `${estimatedDuration} min` : `${Math.round(estimatedDuration / 60)}h ${estimatedDuration % 60}min`;
+    const durationStr = estimatedDuration < 60 ? `${estimatedDuration}-${estimatedDuration + 15} min` : `${Math.round(estimatedDuration / 60)}h ${estimatedDuration % 60}min`;
 
     const template: Omit<WorkoutTemplate, 'id'> = {
       name,
@@ -66,7 +66,6 @@ const WorkoutCreatorModal = ({ open, onClose, editingTemplate }: WorkoutCreatorM
     };
 
     createWorkoutTemplate(template);
-    onClose();
     
     // Reset form
     setName('');
@@ -74,6 +73,8 @@ const WorkoutCreatorModal = ({ open, onClose, editingTemplate }: WorkoutCreatorM
     setDifficulty('Iniciante');
     setDescription('');
     setExercises([]);
+    
+    onClose();
   };
 
   return (

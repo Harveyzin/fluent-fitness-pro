@@ -57,6 +57,7 @@ const ActiveWorkoutModal = ({ open, onClose }: ActiveWorkoutModalProps) => {
 
   const handleEndWorkout = () => {
     endWorkout();
+    playSound('finish');
     onClose();
   };
 
@@ -256,6 +257,23 @@ const ActiveWorkoutModal = ({ open, onClose }: ActiveWorkoutModalProps) => {
               >
                 <Check size={16} className="mr-2" />
                 Finalizar Treino
+              </Button>
+            )}
+            
+            {activeWorkout.currentSet <= totalSets && (
+              <Button
+                onClick={() => {
+                  if (isRunning) {
+                    pauseTimer();
+                  } else {
+                    startTimer();
+                  }
+                }}
+                variant="outline"
+                className="flex-1"
+              >
+                {isRunning ? <Pause size={16} className="mr-2" /> : <Play size={16} className="mr-2" />}
+                {isRunning ? 'Pausar' : 'Continuar'}
               </Button>
             )}
             
