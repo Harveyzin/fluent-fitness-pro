@@ -126,12 +126,12 @@ const ReportGenerator = () => {
                 <th>Duração</th>
                 <th>Exercícios</th>
               </tr>
-              ${data.workouts.map(w => `
+              ${data.workouts.map(workout => `
                 <tr>
-                  <td>${w.date.toLocaleDateString('pt-BR')}</td>
-                  <td>${w.name}</td>
-                  <td>${w.duration}min</td>
-                  <td>${w.exercises}</td>
+                  <td>${workout.date.toLocaleDateString('pt-BR')}</td>
+                  <td>${workout.name}</td>
+                  <td>${workout.duration}min</td>
+                  <td>${workout.exercises}</td>
                 </tr>
               `).join('')}
             </table>
@@ -185,8 +185,8 @@ const ReportGenerator = () => {
     if (config.categories.includes('workouts')) {
       csvContent += "TREINOS\n";
       csvContent += "Data,Treino,Duração,Exercícios\n";
-      data.workouts.forEach(w => {
-        csvContent += `${w.date.toLocaleDateString('pt-BR')},${w.name},${w.duration},${w.exercises}\n`;
+      data.workouts.forEach(workout => {
+        csvContent += `${workout.date.toLocaleDateString('pt-BR')},${workout.name},${workout.duration},${workout.exercises}\n`;
       });
       csvContent += "\n";
     }
@@ -195,8 +195,8 @@ const ReportGenerator = () => {
     if (config.categories.includes('nutrition')) {
       csvContent += "NUTRIÇÃO\n";
       csvContent += "Data,Calorias,Proteínas,Carboidratos,Gorduras\n";
-      data.nutrition.forEach(n => {
-        csvContent += `${n.date.toLocaleDateString('pt-BR')},${n.calories},${n.protein},${n.carbs},${n.fat}\n`;
+      data.nutrition.forEach(nutritionEntry => {
+        csvContent += `${nutritionEntry.date.toLocaleDateString('pt-BR')},${nutritionEntry.calories},${nutritionEntry.protein},${nutritionEntry.carbs},${nutritionEntry.fat}\n`;
       });
     }
 
