@@ -1,5 +1,22 @@
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
+import { WorkoutProvider } from "./contexts/WorkoutContext.tsx";
+import { NutritionProvider } from "./contexts/NutritionContext.tsx";
+import { SettingsProvider } from "./contexts/SettingsContext.tsx";
+import { TrainerProvider } from "./contexts/TrainerContext.tsx";
+import { BioimpedanceProvider } from "./contexts/BioimpedanceContext.tsx";
 
-createRoot(document.getElementById("root")!).render(<App />);
+createRoot(document.getElementById("root")!).render(
+  <WorkoutProvider>
+    <NutritionProvider>
+      <SettingsProvider>
+        <TrainerProvider>
+          <BioimpedanceProvider>
+            <App />
+          </BioimpedanceProvider>
+        </TrainerProvider>
+      </SettingsProvider>
+    </NutritionProvider>
+  </WorkoutProvider>
+);

@@ -10,8 +10,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useTrainer } from '@/contexts/TrainerContext';
+import { useTrainer, Student } from '@/contexts/TrainerContext';
 import { useToast } from '@/hooks/use-toast';
+import { StudentProfileModal } from './StudentProfileModal';
 
 const StudentManagement = () => {
   const { students, addStudent, removeStudent, selectStudent, selectedStudent, updateStudentProgress } = useTrainer();
@@ -24,6 +25,7 @@ const StudentManagement = () => {
     email: '',
     plan: 'Basic'
   });
+  const [selectedStudentProfile, setSelectedStudentProfile] = useState<Student | null>(null);
 
   const filteredStudents = students.filter(student => {
     const matchesSearch = student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -222,7 +224,7 @@ const StudentManagement = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => selectStudent(student)}>
+                  <DropdownMenuItem onClick={() => setSelectedStudentProfile(student)}>
                     <User size={16} className="mr-2" />
                     Ver Perfil
                   </DropdownMenuItem>
@@ -259,6 +261,12 @@ const StudentManagement = () => {
           )}
         </Card>
       )}
+
+      <StudentProfileModal
+        student={selectedStudentProfile}
+        isOpen={!!selectedStudentProfile}
+        onClose={() => setSelectedStudentProfile(null)}
+      />
     </div>
   );
 };
