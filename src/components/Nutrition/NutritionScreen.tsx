@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
+import ProgressChart from '@/components/Charts/ProgressChart';
 import { useNutrition } from '@/contexts/NutritionContext';
 import AddFoodModal from './AddFoodModal';
 import ScannerModal from './ScannerModal';
@@ -106,6 +107,13 @@ const NutritionScreen = () => {
 
       {/* Macros Overview */}
       <Card className="p-6 shadow-card animate-scale-in">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold">Metas Diárias</h3>
+          <Button variant="outline" size="sm" onClick={() => setGoalsOpen(true)}>
+            <Target size={16} className="mr-2" />
+            Ajustar
+          </Button>
+        </div>
         <div className="grid grid-cols-2 gap-4">
           {macros.map((macro, index) => {
             const percentage = macro.target > 0 ? (macro.current / macro.target) * 100 : 0;
@@ -128,6 +136,11 @@ const NutritionScreen = () => {
           })}
         </div>
       </Card>
+
+      {/* Macros Chart */}
+      <div className="animate-slide-up">
+        <ProgressChart type="macros" title="Distribuição de Macronutrientes Hoje" height={250} />
+      </div>
 
       {/* Search Bar */}
       <div className="animate-slide-up">
@@ -284,6 +297,11 @@ const NutritionScreen = () => {
       <ReportModal
         isOpen={reportOpen}
         onClose={() => setReportOpen(false)}
+      />
+
+      <NutritionGoalsModal
+        isOpen={goalsOpen}
+        onClose={() => setGoalsOpen(false)}
       />
     </div>
   );

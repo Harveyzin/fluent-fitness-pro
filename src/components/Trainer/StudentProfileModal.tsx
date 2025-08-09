@@ -98,9 +98,9 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
         <Tabs defaultValue="general" className="space-y-4">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="general">Informações Gerais</TabsTrigger>
+            <TabsTrigger value="health">Anamnese</TabsTrigger>
             <TabsTrigger value="bioimpedance">Bioimpedância</TabsTrigger>
             <TabsTrigger value="progress">Progresso</TabsTrigger>
-            <TabsTrigger value="workouts">Treinos</TabsTrigger>
           </TabsList>
 
           <TabsContent value="general" className="space-y-4">
@@ -117,6 +117,18 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
                     <Mail className="h-4 w-4 text-muted-foreground" />
                     <span className="text-sm">{student.email}</span>
                   </div>
+                  {student.phone && (
+                    <div className="flex items-center gap-2">
+                      <span className="h-4 w-4 text-muted-foreground">📱</span>
+                      <span className="text-sm">{student.phone}</span>
+                    </div>
+                  )}
+                  {student.age && (
+                    <div className="flex items-center gap-2">
+                      <span className="h-4 w-4 text-muted-foreground">🎂</span>
+                      <span className="text-sm">{student.age} anos</span>
+                    </div>
+                  )}
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-muted-foreground" />
                     <span className="text-sm">
@@ -204,6 +216,176 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
                 </CardContent>
               </Card>
             )}
+          </TabsContent>
+
+          <TabsContent value="health" className="space-y-4">
+            <div className="grid gap-4">
+              {/* Health Conditions */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    🏥 Condições de Saúde
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {student.healthData?.conditions && student.healthData.conditions.length > 0 ? (
+                    <div className="space-y-2">
+                      {student.healthData.conditions.map((condition, index) => (
+                        <div key={index} className="p-2 bg-red-50 border border-red-200 rounded text-sm">
+                          {condition}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">Nenhuma condição de saúde reportada</p>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Medications */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    💊 Medicamentos
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {student.healthData?.medications && student.healthData.medications.length > 0 ? (
+                    <div className="space-y-2">
+                      {student.healthData.medications.map((medication, index) => (
+                        <div key={index} className="p-2 bg-blue-50 border border-blue-200 rounded text-sm">
+                          {medication}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">Nenhum medicamento em uso</p>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Injuries and Limitations */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    🩹 Lesões e Limitações
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div>
+                      <h5 className="font-medium text-sm mb-2">Lesões:</h5>
+                      {student.healthData?.injuries && student.healthData.injuries.length > 0 ? (
+                        <div className="space-y-1">
+                          {student.healthData.injuries.map((injury, index) => (
+                            <div key={index} className="p-2 bg-orange-50 border border-orange-200 rounded text-sm">
+                              {injury}
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-sm text-muted-foreground">Nenhuma lesão reportada</p>
+                      )}
+                    </div>
+                    
+                    <div>
+                      <h5 className="font-medium text-sm mb-2">Limitações:</h5>
+                      {student.fitnessData?.limitations && student.fitnessData.limitations.length > 0 ? (
+                        <div className="space-y-1">
+                          {student.fitnessData.limitations.map((limitation, index) => (
+                            <div key={index} className="p-2 bg-yellow-50 border border-yellow-200 rounded text-sm">
+                              {limitation}
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-sm text-muted-foreground">Nenhuma limitação reportada</p>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Emergency Contact */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    🚨 Contato de Emergência
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {student.healthData?.emergencyContact ? (
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-sm text-muted-foreground">Nome:</span>
+                        <span className="text-sm font-medium">{student.healthData.emergencyContact.name}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm text-muted-foreground">Telefone:</span>
+                        <span className="text-sm font-medium">{student.healthData.emergencyContact.phone}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm text-muted-foreground">Parentesco:</span>
+                        <span className="text-sm font-medium">{student.healthData.emergencyContact.relationship}</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">Contato de emergência não cadastrado</p>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Fitness Goals and Preferences */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    🎯 Objetivos e Preferências
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div>
+                      <h5 className="font-medium text-sm mb-2">Objetivos:</h5>
+                      {student.fitnessData?.goals && student.fitnessData.goals.length > 0 ? (
+                        <div className="flex flex-wrap gap-1">
+                          {student.fitnessData.goals.map((goal, index) => (
+                            <Badge key={index} variant="secondary" className="text-xs">
+                              {goal}
+                            </Badge>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-sm text-muted-foreground">Objetivos não definidos</p>
+                      )}
+                    </div>
+                    
+                    <div>
+                      <h5 className="font-medium text-sm mb-2">Preferências:</h5>
+                      {student.fitnessData?.preferences && student.fitnessData.preferences.length > 0 ? (
+                        <div className="flex flex-wrap gap-1">
+                          {student.fitnessData.preferences.map((preference, index) => (
+                            <Badge key={index} variant="outline" className="text-xs">
+                              {preference}
+                            </Badge>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-sm text-muted-foreground">Preferências não definidas</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <h5 className="font-medium text-sm mb-2">Experiência:</h5>
+                      <Badge className="text-xs">
+                        {student.fitnessData?.experience === 'beginner' ? 'Iniciante' :
+                         student.fitnessData?.experience === 'intermediate' ? 'Intermediário' :
+                         student.fitnessData?.experience === 'advanced' ? 'Avançado' : 'Não definido'}
+                      </Badge>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           <TabsContent value="bioimpedance" className="space-y-4">

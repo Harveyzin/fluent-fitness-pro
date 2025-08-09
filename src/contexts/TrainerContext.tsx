@@ -4,12 +4,38 @@ export interface Student {
   id: string;
   name: string;
   email: string;
+  phone?: string;
+  age?: number;
+  gender?: 'male' | 'female' | 'other';
   avatar: string;
   joinDate: string;
   lastWorkout: string;
   progress: number;
   plan: string;
   status: 'active' | 'inactive' | 'pending';
+  healthData?: {
+    conditions: string[];
+    medications: string[];
+    injuries: string[];
+    allergies: string[];
+    emergencyContact: {
+      name: string;
+      phone: string;
+      relationship: string;
+    };
+  };
+  fitnessData?: {
+    goals: string[];
+    experience: 'beginner' | 'intermediate' | 'advanced';
+    preferences: string[];
+    limitations: string[];
+  };
+  personalData?: {
+    occupation: string;
+    lifestyle: 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active';
+    sleepHours: number;
+    stressLevel: number; // 1-10
+  };
 }
 
 interface WorkoutTemplate {
@@ -62,34 +88,112 @@ export const TrainerProvider: React.FC<{ children: ReactNode }> = ({ children })
       id: '1',
       name: 'Ana Silva',
       email: 'ana.silva@email.com',
+      phone: '(11) 99999-1234',
+      age: 28,
+      gender: 'female',
       avatar: 'AS',
       joinDate: '2024-01-15',
       lastWorkout: '2024-01-10',
       progress: 78,
       plan: 'Premium',
-      status: 'active'
+      status: 'active',
+      healthData: {
+        conditions: ['Hipertensão leve'],
+        medications: ['Losartana 50mg'],
+        injuries: [],
+        allergies: ['Lactose'],
+        emergencyContact: {
+          name: 'João Silva',
+          phone: '(11) 88888-1234',
+          relationship: 'Marido'
+        }
+      },
+      fitnessData: {
+        goals: ['Perder peso', 'Ganhar massa muscular'],
+        experience: 'intermediate',
+        preferences: ['Musculação', 'Pilates'],
+        limitations: ['Problemas no joelho direito']
+      },
+      personalData: {
+        occupation: 'Advogada',
+        lifestyle: 'moderate',
+        sleepHours: 7,
+        stressLevel: 6
+      }
     },
     {
       id: '2',
       name: 'Carlos Santos',
       email: 'carlos.santos@email.com',
+      phone: '(11) 77777-5678',
+      age: 35,
+      gender: 'male',
       avatar: 'CS',
       joinDate: '2024-02-01',
       lastWorkout: '2024-01-09',
       progress: 65,
       plan: 'Basic',
-      status: 'active'
+      status: 'active',
+      healthData: {
+        conditions: [],
+        medications: [],
+        injuries: ['Lesão no ombro esquerdo (2023)'],
+        allergies: [],
+        emergencyContact: {
+          name: 'Maria Santos',
+          phone: '(11) 66666-5678',
+          relationship: 'Esposa'
+        }
+      },
+      fitnessData: {
+        goals: ['Melhorar condicionamento', 'Fortalecer core'],
+        experience: 'beginner',
+        preferences: ['Funcional', 'Cardio'],
+        limitations: ['Evitar exercícios acima da cabeça']
+      },
+      personalData: {
+        occupation: 'Engenheiro',
+        lifestyle: 'light',
+        sleepHours: 6,
+        stressLevel: 7
+      }
     },
     {
       id: '3',
       name: 'Maria Oliveira',
       email: 'maria.oliveira@email.com',
+      phone: '(11) 55555-9012',
+      age: 42,
+      gender: 'female',
       avatar: 'MO',
       joinDate: '2024-01-20',
       lastWorkout: 'Never',
       progress: 0,
       plan: 'Premium',
-      status: 'pending'
+      status: 'pending',
+      healthData: {
+        conditions: ['Diabetes tipo 2'],
+        medications: ['Metformina 850mg'],
+        injuries: [],
+        allergies: ['Glúten'],
+        emergencyContact: {
+          name: 'Pedro Oliveira',
+          phone: '(11) 44444-9012',
+          relationship: 'Filho'
+        }
+      },
+      fitnessData: {
+        goals: ['Controlar diabetes', 'Perder peso', 'Melhorar mobilidade'],
+        experience: 'beginner',
+        preferences: ['Caminhada', 'Hidroginástica'],
+        limitations: ['Evitar exercícios de alto impacto']
+      },
+      personalData: {
+        occupation: 'Professora',
+        lifestyle: 'sedentary',
+        sleepHours: 8,
+        stressLevel: 4
+      }
     }
   ]);
 

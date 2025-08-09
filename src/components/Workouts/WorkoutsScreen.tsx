@@ -8,6 +8,7 @@ import { useWorkout } from '@/contexts/WorkoutContext';
 import ActiveWorkoutModal from './ActiveWorkoutModal';
 import WorkoutCreatorModal from './WorkoutCreatorModal';
 import ExerciseLibraryModal from './ExerciseLibraryModal';
+import WorkoutStatsCard from './WorkoutStatsCard';
 
 const WorkoutsScreen = () => {
   const { workoutTemplates, startWorkout, workoutHistory, deleteWorkoutTemplate } = useWorkout();
@@ -126,23 +127,8 @@ const WorkoutsScreen = () => {
             </Button>
           </Card>
 
-          {/* Quick Stats */}
-          <div className="grid grid-cols-3 gap-3">
-            <Card className="p-3 text-center">
-              <div className="text-lg font-bold text-fitflow-green">{workoutHistory.length}</div>
-              <div className="text-xs text-muted-foreground">Treinos Feitos</div>
-            </Card>
-            <Card className="p-3 text-center">
-              <div className="text-lg font-bold text-blue-500">
-                {workoutHistory.reduce((sum, w) => sum + w.duration, 0)}min
-              </div>
-              <div className="text-xs text-muted-foreground">Tempo Total</div>
-            </Card>
-            <Card className="p-3 text-center">
-              <div className="text-lg font-bold text-orange-500">7</div>
-              <div className="text-xs text-muted-foreground">Dias Seguidos</div>
-            </Card>
-          </div>
+          {/* Workout Stats */}
+          <WorkoutStatsCard />
 
           {/* All Available Workouts */}
           <div className="space-y-3">
@@ -281,15 +267,33 @@ const WorkoutsScreen = () => {
                        <span>{workout.duration} min</span>
                        <span>•</span>
                        <span>{workout.exercises} exercícios</span>
+                       <span>•</span>
+                       <span>{workout.totalReps} reps</span>
                      </div>
                   </div>
                 </div>
-                <Button variant="ghost" size="sm">
-                  <Play size={16} />
-                </Button>
+                <div className="text-right">
+                  <div className="text-sm font-semibold text-fitflow-green">
+                    {Math.round(workout.duration * 8)} kcal
+                  </div>
+                  <div className="text-xs text-muted-foreground">queimadas</div>
+                </div>
               </div>
             </Card>
           ))}
+          
+          {workoutHistory.length === 0 && (
+            <Card className="p-8 text-center">
+              <Clock size={48} className="mx-auto mb-4 text-muted-foreground opacity-50" />
+              <h3 className="font-semibold mb-2">Nenhum treino realizado</h3>
+              <p className="text-muted-foreground mb-4">
+                Complete seu primeiro treino para ver o histórico aqui
+              </p>
+              <Button onClick={() => setActiveTab('today')}>
+                Começar Primeiro Treino
+              </Button>
+            </Card>
+          )}
         </div>
       )}
 

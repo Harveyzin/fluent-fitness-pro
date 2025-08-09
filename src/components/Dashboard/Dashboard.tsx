@@ -74,15 +74,15 @@ const Dashboard: React.FC<DashboardProps> = ({ onTabChange }) => {
     },
     { 
       icon: Target, 
-      label: 'Definir Meta', 
+      label: 'Ver Progresso', 
       color: 'bg-orange-500',
-      action: () => onTabChange('profile')
+      action: () => onTabChange('progress')
     },
     { 
-      icon: TrendingUp, 
-      label: 'Ver Progresso', 
+      icon: User, 
+      label: 'Meu Perfil', 
       color: 'bg-purple-500',
-      action: () => onTabChange('progress')
+      action: () => onTabChange('profile')
     },
   ];
 

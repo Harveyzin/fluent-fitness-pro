@@ -27,6 +27,8 @@ const PremiumUpgradeModal = ({ isOpen, onClose }: PremiumUpgradeModalProps) => {
         'Treinos básicos ilimitados',
         'Rastreamento de progresso',
         'Biblioteca de exercícios',
+        'Histórico de treinos',
+        'Timer de descanso',
         'Suporte por email'
       ],
       color: 'border-gray-200',
@@ -41,11 +43,13 @@ const PremiumUpgradeModal = ({ isOpen, onClose }: PremiumUpgradeModalProps) => {
       description: 'Mais popular entre nossos usuários',
       features: [
         'Tudo do plano Basic',
-        'Treinos personalizados com IA',
+        'Módulo completo de nutrição',
+        'Scanner de código de barras',
+        'Gráficos de macronutrientes',
         'Planos nutricionais',
-        'Estatísticas avançadas',
+        'Relatórios nutricionais',
+        'Metas personalizadas',
         'Suporte prioritário',
-        'Acesso a personal trainers'
       ],
       color: 'border-fitflow-green',
       buttonClass: 'bg-fitflow-green text-white',
@@ -61,10 +65,12 @@ const PremiumUpgradeModal = ({ isOpen, onClose }: PremiumUpgradeModalProps) => {
         'Tudo do plano Premium',
         'Ferramentas de personal trainer',
         'Gestão de alunos ilimitada',
+        'Anamnese completa dos alunos',
+        'Bioimpedância e medições',
         'Marketplace de treinos',
         'Analytics profissionais',
-        'API access',
-        'White label'
+        'Relatórios personalizados',
+        'Suporte dedicado'
       ],
       color: 'border-purple-500',
       buttonClass: 'border border-purple-500 text-purple-500',

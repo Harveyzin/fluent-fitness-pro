@@ -228,9 +228,17 @@ const StudentManagement = () => {
                     <User size={16} className="mr-2" />
                     Ver Perfil
                   </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => toast({ title: "Criar Treino", description: "Criar treino personalizado para " + student.name })}>
+                    <Target size={16} className="mr-2" />
+                    Criar Treino
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => updateStudentProgress(student.id, Math.min(100, student.progress + 10))}>
                     <TrendingUp size={16} className="mr-2" />
                     Atualizar Progresso
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => toast({ title: "Enviar Mensagem", description: "Funcionalidade de mensagem será implementada" })}>
+                    <Mail size={16} className="mr-2" />
+                    Enviar Mensagem
                   </DropdownMenuItem>
                   <DropdownMenuItem 
                     onClick={() => handleRemoveStudent(student.id)}

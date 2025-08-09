@@ -240,9 +240,7 @@ const ProgressScreen = () => {
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-slide-up">
         <ProgressChart type="weight" title="Evolução do Peso" />
-        <ProgressChart type="calories" title="Consumo Calórico" />
         <ProgressChart type="workouts" title="Performance nos Treinos" />
-        <ProgressChart type="macros" title="Distribuição de Macronutrientes" />
       </div>
 
       {/* Achievements */}
