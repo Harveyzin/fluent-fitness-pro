@@ -6,11 +6,6 @@ import NutritionScreen from '@/components/Nutrition/NutritionScreen';
 import WorkoutsScreen from '@/components/Workouts/WorkoutsScreen';
 import ProgressScreen from '@/components/Progress/ProgressScreen';
 import ProfileScreen from '@/components/Profile/ProfileScreen';
-import { NutritionProvider } from '@/contexts/NutritionContext';
-import { WorkoutProvider } from '@/contexts/WorkoutContext';
-import { SettingsProvider } from '@/contexts/SettingsContext';
-import { ProgressProvider } from '@/contexts/ProgressContext';
-import { TrainerProvider } from '@/contexts/TrainerContext';
 import SettingsScreen from '@/components/Settings/SettingsScreen';
 
 const Index = () => {
@@ -36,19 +31,9 @@ const Index = () => {
   };
 
   return (
-    <SettingsProvider>
-      <ProgressProvider>
-        <TrainerProvider>
-          <NutritionProvider>
-            <WorkoutProvider>
-              <MainLayout activeTab={activeTab} onTabChange={setActiveTab}>
-                {renderContent()}
-              </MainLayout>
-            </WorkoutProvider>
-          </NutritionProvider>
-        </TrainerProvider>
-      </ProgressProvider>
-    </SettingsProvider>
+    <MainLayout activeTab={activeTab} onTabChange={setActiveTab}>
+      {renderContent()}
+    </MainLayout>
   );
 };
 

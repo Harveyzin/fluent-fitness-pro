@@ -6,6 +6,7 @@ import { NutritionProvider } from "./contexts/NutritionContext.tsx";
 import { SettingsProvider } from "./contexts/SettingsContext.tsx";
 import { TrainerProvider } from "./contexts/TrainerContext.tsx";
 import { BioimpedanceProvider } from "./contexts/BioimpedanceContext.tsx";
+import { ProgressProvider } from "./contexts/ProgressContext.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <WorkoutProvider>
@@ -13,7 +14,9 @@ createRoot(document.getElementById("root")!).render(
       <SettingsProvider>
         <TrainerProvider>
           <BioimpedanceProvider>
-            <App />
+            <ProgressProvider>
+              <App />
+            </ProgressProvider>
           </BioimpedanceProvider>
         </TrainerProvider>
       </SettingsProvider>

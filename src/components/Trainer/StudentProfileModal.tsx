@@ -16,24 +16,14 @@ import {
   Target,
   Award
 } from 'lucide-react';
-import { useTrainer } from '@/contexts/TrainerContext';
+import { Student } from '@/contexts/TrainerContext';
 import { useBioimpedance } from '@/contexts/BioimpedanceContext';
 import { BioimpedanceForm } from '@/components/Bioimpedance/BioimpedanceForm';
-import { BioimpedanceChart } from '@/components/Bioimpedance/BioimpedanceChart';
+// import { BioimpedanceChart } from '@/components/Bioimpedance/BioimpedanceChart';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import BioimpedanceSection from '@/components/Bioimpedance/BioimpedanceSection';
 
-interface Student {
-  id: string;
-  name: string;
-  email: string;
-  avatar: string;
-  joinDate: string;
-  lastWorkout: string;
-  progress: number;
-  plan: string;
-  status: 'active' | 'inactive' | 'pending';
-}
 
 interface StudentProfileModalProps {
   student: Student | null;
@@ -389,32 +379,7 @@ export const StudentProfileModal: React.FC<StudentProfileModalProps> = ({
           </TabsContent>
 
           <TabsContent value="bioimpedance" className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-semibold">Histórico de Bioimpedância</h3>
-              <Button 
-                onClick={() => setShowBioForm(!showBioForm)}
-                className="flex items-center gap-2"
-              >
-                <Plus className="h-4 w-4" />
-                Nova Medição
-              </Button>
-            </div>
-
-            {showBioForm && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Adicionar Nova Medição</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <BioimpedanceForm 
-                    studentId={student.id} 
-                    onSubmit={() => setShowBioForm(false)}
-                  />
-                </CardContent>
-              </Card>
-            )}
-
-            <BioimpedanceChart studentId={student.id} />
+            <BioimpedanceSection studentId={student.id} allowAdd />
           </TabsContent>
 
           <TabsContent value="progress" className="space-y-4">

@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Search, Plus, Camera, BarChart3, Clock, Trash2 } from 'lucide-react';
+import { Search, Plus, Camera, BarChart3, Clock, Trash2, Target } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,12 +10,14 @@ import { useNutrition } from '@/contexts/NutritionContext';
 import AddFoodModal from './AddFoodModal';
 import ScannerModal from './ScannerModal';
 import ReportModal from './ReportModal';
+import NutritionGoalsModal from './NutritionGoalsModal';
 
 const NutritionScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [scannerOpen, setScannerOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
+  const [goalsOpen, setGoalsOpen] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<'breakfast' | 'lunch' | 'snack' | 'dinner'>('breakfast');
   
   const { nutritionData, getDailyTotals, getTotalsByMeal, removeMealItem, searchFoods, addMealItem } = useNutrition();

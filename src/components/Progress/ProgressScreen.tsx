@@ -10,14 +10,18 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useProgress, TimeFilter } from '@/contexts/ProgressContext';
 import ProgressChart from '@/components/Charts/ProgressChart';
 import { useToast } from '@/hooks/use-toast';
+import { useTrainer } from '@/contexts/TrainerContext';
+import BioimpedanceSection from '@/components/Bioimpedance/BioimpedanceSection';
 
 const ProgressScreen = () => {
   const { timeFilter, setTimeFilter, generateReport, addBodyProgress } = useProgress();
   const { toast } = useToast();
+  const { students } = useTrainer();
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [showAddMeasurementDialog, setShowAddMeasurementDialog] = useState(false);
   const [newWeight, setNewWeight] = useState('');
   const [newBodyFat, setNewBodyFat] = useState('');
+  const [selectedStudentId, setSelectedStudentId] = useState(students[0]?.id ?? '1');
 
   const stats = [
     { label: 'Peso Atual', value: '73.5kg', change: '-2.1kg', positive: true },
@@ -241,6 +245,26 @@ const ProgressScreen = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-slide-up">
         <ProgressChart type="weight" title="Evolução do Peso" />
         <ProgressChart type="workouts" title="Performance nos Treinos" />
+      </div>
+
+      {/* Bioimpedance Section */}
+      <div className="animate-slide-up space-y-3">
+        {students.length > 0 && (
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">Bioimpedância</h3>
+            <Select value={selectedStudentId} onValueChange={setSelectedStudentId}>
+              <SelectTrigger className="w-48">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {students.map((s) => (
+                  <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+        <BioimpedanceSection studentId={selectedStudentId} allowAdd />
       </div>
 
       {/* Achievements */}

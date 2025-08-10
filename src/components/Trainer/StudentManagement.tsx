@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Plus, Filter, MoreVertical, User, Mail, Calendar, TrendingUp } from 'lucide-react';
+import { Search, Plus, Filter, MoreVertical, User, Mail, Calendar, TrendingUp, Target } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -214,6 +214,10 @@ const StudentManagement = () => {
                 <div className="flex items-center gap-2">
                   <Progress value={student.progress} className="flex-1 h-2" />
                   <span className="text-sm font-medium">{student.progress}%</span>
+                  <Button variant="outline" size="sm" onClick={() => setSelectedStudentProfile(student)} className="ml-2">
+                    <User size={14} className="mr-1" />
+                    Ver Perfil
+                  </Button>
                 </div>
               </div>
 
@@ -224,7 +228,7 @@ const StudentManagement = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => setSelectedStudentProfile(student)}>
+                  <DropdownMenuItem onSelect={() => setSelectedStudentProfile(student)}>
                     <User size={16} className="mr-2" />
                     Ver Perfil
                   </DropdownMenuItem>

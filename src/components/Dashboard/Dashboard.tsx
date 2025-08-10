@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Calendar, Target, Zap, TrendingUp, Plus, Bell, Dumbbell, Apple, Trophy } from 'lucide-react';
+import { Calendar, Target, Zap, TrendingUp, Plus, Bell, Dumbbell, Apple, Trophy, User } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
