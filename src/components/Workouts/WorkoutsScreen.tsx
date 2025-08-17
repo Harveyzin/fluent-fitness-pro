@@ -5,13 +5,17 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useWorkout } from '@/contexts/WorkoutContext';
+import { useSettings } from '@/contexts/SettingsContext';
+import { RestrictedButton } from '@/components/ui/restricted-button';
 import ActiveWorkoutModal from './ActiveWorkoutModal';
 import WorkoutCreatorModal from './WorkoutCreatorModal';
 import ExerciseLibraryModal from './ExerciseLibraryModal';
 import WorkoutStatsCard from './WorkoutStatsCard';
+import MemoizedWorkoutCard from './MemoizedWorkoutCard';
 
 const WorkoutsScreen = () => {
   const { workoutTemplates, startWorkout, workoutHistory, deleteWorkoutTemplate } = useWorkout();
+  const { isTrainerMode } = useSettings();
   const [activeTab, setActiveTab] = useState('today');
   const [showActiveWorkout, setShowActiveWorkout] = useState(false);
   const [showWorkoutCreator, setShowWorkoutCreator] = useState(false);
@@ -151,44 +155,13 @@ const WorkoutsScreen = () => {
             
             <div className="grid gap-3">
               {filteredTemplates.map((template) => (
-                <Card key={template.id} className="p-4 shadow-card hover:shadow-card-hover transition-smooth">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-fitflow-green/10 rounded-lg flex items-center justify-center">
-                        <Zap size={24} className="text-fitflow-green" />
-                      </div>
-                      <div>
-                        <h5 className="font-semibold">{template.name}</h5>
-                        <p className="text-xs text-muted-foreground mb-1">{template.description}</p>
-                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                          <span>{template.duration}</span>
-                          <span>•</span>
-                          <span>{template.exercises.length} exercícios</span>
-                          <span>•</span>
-                          <Badge variant="outline" className="text-xs">{template.difficulty}</Badge>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        onClick={() => handleStartWorkout(template)}
-                        variant="ghost"
-                        size="sm"
-                        className="text-fitflow-green hover:bg-fitflow-green/10"
-                      >
-                        <Play size={16} />
-                      </Button>
-                      <Button
-                        onClick={() => deleteWorkoutTemplate(template.id)}
-                        variant="ghost"
-                        size="sm"
-                        className="text-destructive hover:bg-destructive/10"
-                      >
-                        <Trash2 size={16} />
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
+                <MemoizedWorkoutCard
+                  key={template.id}
+                  template={template}
+                  isTrainerMode={isTrainerMode}
+                  onStart={handleStartWorkout}
+                  onDelete={deleteWorkoutTemplate}
+                />
               ))}
             </div>
           </div>
@@ -231,13 +204,15 @@ const WorkoutsScreen = () => {
             <p className="text-muted-foreground mb-4">
               Crie seu primeiro treino para começar
             </p>
-            <Button
+            <RestrictedButton
               onClick={() => setShowWorkoutCreator(true)}
               className="bg-fitflow-green hover:bg-fitflow-green/90"
+              isRestricted={isTrainerMode}
+              tooltip="Criar treinos disponível apenas no modo personal"
             >
               <Plus size={16} className="mr-2" />
               Criar Treino
-            </Button>
+            </RestrictedButton>
           </Card>
         </div>
       )}
@@ -304,8 +279,8 @@ const WorkoutsScreen = () => {
           
           <div className="grid grid-cols-2 gap-4">
             <Card 
-              onClick={() => setShowWorkoutCreator(true)}
-              className="p-4 shadow-card hover:shadow-card-hover transition-smooth cursor-pointer"
+              onClick={!isTrainerMode ? () => setShowWorkoutCreator(true) : undefined}
+              className={`p-4 shadow-card transition-smooth ${!isTrainerMode ? 'hover:shadow-card-hover cursor-pointer' : 'opacity-60 cursor-not-allowed'}`}
             >
               <div className="text-center">
                 <div className="w-12 h-12 bg-fitflow-green/10 rounded-lg flex items-center justify-center mx-auto mb-3">
@@ -317,8 +292,8 @@ const WorkoutsScreen = () => {
             </Card>
             
             <Card 
-              onClick={() => setShowExerciseLibrary(true)}
-              className="p-4 shadow-card hover:shadow-card-hover transition-smooth cursor-pointer"
+              onClick={!isTrainerMode ? () => setShowExerciseLibrary(true) : undefined}
+              className={`p-4 shadow-card transition-smooth ${!isTrainerMode ? 'hover:shadow-card-hover cursor-pointer' : 'opacity-60 cursor-not-allowed'}`}
             >
               <div className="text-center">
                 <div className="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center mx-auto mb-3">
@@ -381,14 +356,16 @@ const WorkoutsScreen = () => {
                         >
                           <Play size={16} />
                         </Button>
-                        <Button
+                        <RestrictedButton
                           onClick={() => deleteWorkoutTemplate(template.id)}
                           variant="ghost"
                           size="sm"
                           className="text-destructive hover:bg-destructive/10"
+                          isRestricted={isTrainerMode}
+                          tooltip="Deletar treinos disponível apenas no modo personal"
                         >
                           <Trash2 size={16} />
-                        </Button>
+                        </RestrictedButton>
                       </div>
                     </div>
                   </Card>

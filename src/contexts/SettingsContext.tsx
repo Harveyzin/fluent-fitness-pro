@@ -24,15 +24,18 @@ export interface UserPreferences {
   units: 'metric' | 'imperial';
   weekStart: 'monday' | 'sunday';
   timeFormat: '12h' | '24h';
+  isTrainerMode: boolean;
 }
 
 interface SettingsContextType {
   notifications: NotificationSettings;
   privacy: PrivacySettings;
   preferences: UserPreferences;
+  isTrainerMode: boolean;
   updateNotifications: (settings: Partial<NotificationSettings>) => void;
   updatePrivacy: (settings: Partial<PrivacySettings>) => void;
   updatePreferences: (settings: Partial<UserPreferences>) => void;
+  toggleTrainerMode: () => void;
   resetToDefaults: () => void;
   exportData: () => void;
   deleteAccount: () => void;
@@ -71,7 +74,8 @@ const defaultPreferences: UserPreferences = {
   language: 'pt',
   units: 'metric',
   weekStart: 'monday',
-  timeFormat: '24h'
+  timeFormat: '24h',
+  isTrainerMode: false
 };
 
 export const SettingsProvider = ({ children }: { children: ReactNode }) => {
@@ -89,6 +93,10 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
 
   const updatePreferences = (settings: Partial<UserPreferences>) => {
     setPreferences(prev => ({ ...prev, ...settings }));
+  };
+
+  const toggleTrainerMode = () => {
+    setPreferences(prev => ({ ...prev, isTrainerMode: !prev.isTrainerMode }));
   };
 
   const resetToDefaults = () => {
@@ -124,9 +132,11 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
       notifications,
       privacy,
       preferences,
+      isTrainerMode: preferences.isTrainerMode,
       updateNotifications,
       updatePrivacy,
       updatePreferences,
+      toggleTrainerMode,
       resetToDefaults,
       exportData,
       deleteAccount

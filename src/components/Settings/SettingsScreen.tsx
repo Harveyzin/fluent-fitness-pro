@@ -10,7 +10,7 @@ import { useSettings } from '@/contexts/SettingsContext';
 import { useToast } from '@/hooks/use-toast';
 
 const SettingsScreen = () => {
-  const { notifications, privacy, preferences, updateNotifications, updatePrivacy, updatePreferences, resetToDefaults, exportData, deleteAccount } = useSettings();
+  const { notifications, privacy, preferences, isTrainerMode, updateNotifications, updatePrivacy, updatePreferences, toggleTrainerMode, resetToDefaults, exportData, deleteAccount } = useSettings();
   const { toast } = useToast();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showHelpDialog, setShowHelpDialog] = useState(false);
@@ -231,6 +231,22 @@ const SettingsScreen = () => {
                 <SelectItem value="imperial">Imperial (lb, ft)</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="font-medium">Modo Personal Trainer</h4>
+              <p className="text-sm text-muted-foreground">Acesso a ferramentas avançadas de treinamento</p>
+            </div>
+            <Switch
+              checked={isTrainerMode}
+              onCheckedChange={() => {
+                toggleTrainerMode();
+                toast({
+                  title: isTrainerMode ? "Modo personal desativado" : "Modo personal ativado",
+                  description: isTrainerMode ? "Agora você pode editar treinos e nutrição" : "Modo somente leitura ativo para estudantes",
+                });
+              }}
+            />
           </div>
         </div>
       </Card>

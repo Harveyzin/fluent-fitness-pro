@@ -7,10 +7,13 @@ import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import ProgressChart from '@/components/Charts/ProgressChart';
 import { useNutrition } from '@/contexts/NutritionContext';
+import { useSettings } from '@/contexts/SettingsContext';
+import { RestrictedButton } from '@/components/ui/restricted-button';
 import AddFoodModal from './AddFoodModal';
 import ScannerModal from './ScannerModal';
 import ReportModal from './ReportModal';
 import NutritionGoalsModal from './NutritionGoalsModal';
+import MemoizedFoodItem from './MemoizedFoodItem';
 
 const NutritionScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -21,6 +24,7 @@ const NutritionScreen = () => {
   const [selectedMealType, setSelectedMealType] = useState<'breakfast' | 'lunch' | 'snack' | 'dinner'>('breakfast');
   
   const { nutritionData, getDailyTotals, getTotalsByMeal, removeMealItem, searchFoods, addMealItem } = useNutrition();
+  const { isTrainerMode } = useSettings();
   const dailyTotals = getDailyTotals();
 
   const meals = [
@@ -111,10 +115,16 @@ const NutritionScreen = () => {
       <Card className="p-6 shadow-card animate-scale-in">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold">Metas Diárias</h3>
-          <Button variant="outline" size="sm" onClick={() => setGoalsOpen(true)}>
+          <RestrictedButton 
+            variant="outline" 
+            size="sm" 
+            onClick={() => setGoalsOpen(true)}
+            isRestricted={isTrainerMode}
+            tooltip="Edição de metas nutricionais disponível apenas no modo personal"
+          >
             <Target size={16} className="mr-2" />
             Ajustar
-          </Button>
+          </RestrictedButton>
         </div>
         <div className="grid grid-cols-2 gap-4">
           {macros.map((macro, index) => {
@@ -222,37 +232,29 @@ const NutritionScreen = () => {
                   </div>
                   <div className="text-right">
                     <div className="font-semibold text-fitflow-green">{mealTotals.calories} kcal</div>
-                    <Button 
+                    <RestrictedButton 
                       variant="ghost" 
                       size="sm" 
                       className="h-6 px-2 text-xs"
                       onClick={() => handleAddFood(meal.id as any)}
+                      isRestricted={isTrainerMode}
+                      tooltip="Adicionar alimentos disponível apenas no modo personal"
                     >
                       <Plus size={12} className="mr-1" />
                       Adicionar
-                    </Button>
+                    </RestrictedButton>
                   </div>
                 </div>
                 
                 {mealItems.length > 0 ? (
                   <div className="space-y-2">
                     {mealItems.map((item, itemIndex) => (
-                      <div key={itemIndex} className="flex items-center justify-between bg-gray-50 rounded p-2">
-                        <div className="flex-1">
-                          <span className="text-sm font-medium">{item.food.name}</span>
-                          <div className="text-xs text-muted-foreground">
-                            {item.quantity}g • {Math.round((item.food.calories_per_100g * item.quantity) / 100)} kcal
-                          </div>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeMealItem(item.food.id)}
-                          className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
-                        >
-                          <Trash2 size={14} />
-                        </Button>
-                      </div>
+                      <MemoizedFoodItem
+                        key={itemIndex}
+                        item={item}
+                        isTrainerMode={isTrainerMode}
+                        onRemove={removeMealItem}
+                      />
                     ))}
                   </div>
                 ) : (
@@ -271,16 +273,18 @@ const NutritionScreen = () => {
         <h4 className="font-semibold mb-3">Alimentos Frequentes</h4>
         <div className="grid grid-cols-2 gap-2">
           {['Banana', 'Peito de Frango', 'Arroz Integral', 'Ovos'].map((food, index) => (
-            <Button 
+            <RestrictedButton 
               key={index} 
               variant="outline" 
               size="sm" 
               className="justify-start"
               onClick={() => handleQuickAdd(food)}
+              isRestricted={isTrainerMode}
+              tooltip="Adicionar alimentos frequentes disponível apenas no modo personal"
             >
               <Plus size={14} className="mr-2" />
               {food}
-            </Button>
+            </RestrictedButton>
           ))}
         </div>
       </Card>
